@@ -1,0 +1,54 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	width: 101%;
+	background-color: #EEE;
+}
+
+#content , #menu , #footer, #header{
+	border: 1px black solid;
+	padding: 2%;
+	background-color: white;
+}
+
+#header, #content_wrapper , #footer{
+	margin: 10px 10%;
+	width: 80%;
+}
+
+#header {
+	height: 100px;
+}
+
+#content_wrapper {
+	float: left;
+    margin-bottom: 10px;
+	height: 80%;
+	min-height: 80%;
+	width: 80%;
+
+}
+
+#content, #menu {
+float: left;
+}
+
+#menu {
+	width: 13%;
+}
+#content {
+    
+	width: 77%;
+	min-width: 77%;
+	margin-left: 1%;
+}
+.breakfloat {
+	clear: both;
+}
+#footer {
+	float: left;
+    margin-top: 10px;
+}
