@@ -3,6 +3,11 @@
 	padding: 0;
 }
 
+table th {
+    text-align: left;
+}
+
+
 body {
 	width: 101%;
 	background-color: #EEE;
@@ -51,4 +56,23 @@ float: left;
 #footer {
 	float: left;
     margin-top: 10px;
+}
+
+#datatable1 {
+    width: 100%;
+}
+
+.datatable {
+    margin-top: 20px;
+    border: 1px black solid;
+}
+.datatable thead {
+    background-color: #08E;
+    border: 1px black solid;
+}
+.datatable td {
+    padding: 1px;
+}
+.colored {
+        background-color: #EEE;
 }
