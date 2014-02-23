@@ -19,11 +19,11 @@ def search_athlet():
     olympic = sqlite3.connect('olympic.db')
     content = olympic.execute("select * from sportler");
     return {"content" : content ,"get_url" : bottle.url}
-@route('/commitathlet', method='POST')
-@view('athlet_added')
+
 
 ### database pages ####
-
+@route('/commitathlet', method='POST')
+@view('olympics_athlet_added')
 def commit_athlet():
     olympic = sqlite3.connect('olympic.db')
     
