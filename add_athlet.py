@@ -39,9 +39,16 @@ def commit_athlet():
         woman = "'TRUE'"
     elif geschlecht == "maennlich":
         woman = "'FALSE'"
-    query = "INSERT INTO SPORTLER (VORNAME, NACHNAME, GESCHLECHT, NATIONALITAET) VALUES ('" + request.forms.get("vorname") + "', '" + request.forms.get("nachname") + "', " + woman + ", '" + request.forms.get("nationalitaet") + "')"
-    olympic.execute(query)
-    olympic.commit()
+    #query = "INSERT INTO SPORTLER (VORNAME, NACHNAME, GESCHLECHT, NATIONALITAET) VALUES ('" + request.forms.get("vorname") + "', '" + request.forms.get("nachname") + "', " + woman + ", '" + request.forms.get("nationalitaet") +",)"
+    #c = olympic.cursor()
+    #file = request.files.bild
+    #raw = file.file.read()
+    #print file.filename
+    #bin = [sqlite3.Binary(file.file.read())]
+    #c.execute(query, bin)
+    #c.commit()
+    #query = "INSERT INTO SPORTLER (VORNAME, NACHNAME, GESCHLECHT, NATIONALITAET, PICTURE) VALUES ('" + request.forms.get("vorname") + "', '" + request.forms.get("nachname") + "', " + woman + ", '" + request.forms.get("nationalitaet") + "', ?)"
+    olympic.execute(query) #Auskommentieren
     query = "SELECT ID from SPORTLER where Vorname='" + request.forms.get("vorname") + "' AND Nachname='" + request.forms.get("nachname") + "'"
     for i in l:
         query += " AND ID IS NOT " + str(i)
