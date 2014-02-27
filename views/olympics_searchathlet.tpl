@@ -8,7 +8,7 @@
                         </tr>
                     </thead>
                     <tr>
-                        <td><label for="id"> Vorname: </label></td>
+                        <td><label for="id"> ID: </label></td>
                         <td><input id="id" type="text" name="id"/> </td>
                     </tr>
                     <tr>
@@ -39,11 +39,11 @@
                     %y= x % 2
                     %if y > 0:
                         <tr>
-                            <td class="colored">{{col[0]}}</td><td class="colored">{{col[1]}}</td><td class="colored">{{col[2]}}</td><td class="colored">{{col[3]}}</td><td class="colored">{{col[4]}}</td>
+                            <td class="colored">{{col[1]}}</td><td class="colored">{{col[2]}}</td><td class="colored">{{col[3]}}</td><td class="colored">{{col[4]}}</td><td class="colored">{{col[5]}}</td>
                         </tr>
                     %else:
                          <tr>
-                            <td>{{col[0]}}</td><td>{{col[1]}}</td><td>{{col[2]}}</td><td>{{col[3]}}</td><td>{{col[4]}}</td>
+                            <td>{{col[1]}}</td><td>{{col[2]}}</td><td>{{col[3]}}</td><td>{{col[4]}}</td><td>{{col[5]}}</td>
                         </tr> 
                     %end
                     %end

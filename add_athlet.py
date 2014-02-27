@@ -19,6 +19,13 @@ def search_athlet():
     olympic = sqlite3.connect('olympic.db')
     content = olympic.execute("select * from sportler");
     return {"content" : content ,"get_url" : bottle.url}
+    
+@route('/searchwettkampf')
+@view('olympics_searchwettkampf')
+def search_wettkampf():
+    olympic = sqlite3.connect('olympic.db')
+    content = olympic.execute("select * from wettkampf");
+    return {"content" : content ,"get_url" : bottle.url}
 
 
 ### database pages ####
@@ -26,7 +33,6 @@ def search_athlet():
 @view('olympics_athlet_added')
 def commit_athlet():
     olympic = sqlite3.connect('olympic.db')
-    
     
     query = "SELECT ID from SPORTLER where Vorname='" + request.forms.get("vorname") + "' AND Nachname='" + request.forms.get("nachname") + "'"
     cursor = olympic.execute(query)
@@ -40,15 +46,16 @@ def commit_athlet():
     elif geschlecht == "maennlich":
         woman = "'FALSE'"
     #query = "INSERT INTO SPORTLER (VORNAME, NACHNAME, GESCHLECHT, NATIONALITAET) VALUES ('" + request.forms.get("vorname") + "', '" + request.forms.get("nachname") + "', " + woman + ", '" + request.forms.get("nationalitaet") +",)"
-    #c = olympic.cursor()
-    #file = request.files.bild
-    #raw = file.file.read()
-    #print file.filename
-    #bin = [sqlite3.Binary(file.file.read())]
-    #c.execute(query, bin)
-    #c.commit()
-    #query = "INSERT INTO SPORTLER (VORNAME, NACHNAME, GESCHLECHT, NATIONALITAET, PICTURE) VALUES ('" + request.forms.get("vorname") + "', '" + request.forms.get("nachname") + "', " + woman + ", '" + request.forms.get("nationalitaet") + "', ?)"
-    olympic.execute(query) #Auskommentieren
+    query = "INSERT INTO SPORTLER (VORNAME, NACHNAME, GESCHLECHT, NATIONALITAET, FOTO) VALUES ('" + request.forms.get("vorname") + "', '" + request.forms.get("nachname") + "', " + woman + ", '" + request.forms.get("nationalitaet") + "', ?)"
+    c = olympic.cursor()
+    file = request.files.bild
+    raw = file.file.read()
+    print file.filename
+    bin = [sqlite3.Binary(file.file.read())]
+    c.execute(query, bin)
+    olympic.commit()
+    
+    #olympic.execute(query) #Auskommentieren
     query = "SELECT ID from SPORTLER where Vorname='" + request.forms.get("vorname") + "' AND Nachname='" + request.forms.get("nachname") + "'"
     for i in l:
         query += " AND ID IS NOT " + str(i)
@@ -59,7 +66,7 @@ def commit_athlet():
         x = i[0]
         break
     
-    return { "ID" : x, "vorname": request.forms.get("vorname"), "nachname": request.forms.get("nachname"), "geschlecht": request.forms.get("geschlecht"), "nationalitaet": request.forms.get("nationalitaet") , "get_url" : bottle.url}
+    return {"ID" : x, "vorname": request.forms.get("vorname"), "nachname": request.forms.get("nachname"), "geschlecht": request.forms.get("geschlecht"), "nationalitaet": request.forms.get("nationalitaet") , "get_url" : bottle.url}
 
 
 
