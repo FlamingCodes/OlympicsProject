@@ -28,7 +28,6 @@
                         <td><label for="bild"> Bild: </label></td>
                         <td><input id="bild" type="file" accept="image" name="bild"/> </td>
                     </tr>
-					    <input name="Datei" type="file" size="50" maxlength="100000" accept="text/*">
 
                 </table>
                 <input type="submit" value="submit"/> 

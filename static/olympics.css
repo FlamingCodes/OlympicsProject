@@ -3,10 +3,29 @@
 	padding: 0;
 }
 
+a {
+	text-decoration: none;
+	color: #444;
+}
+
 table th {
     text-align: left;
 }
+li {
+	list-style-type: none;
+}
 
+.lh {
+	border-bottom: 1px solid black;
+}
+
+
+li a {
+	font-size: 13px;
+	font-color: red;
+	margin: 1px;
+	font-style: 
+}
 
 body {
 	width: 101%;
