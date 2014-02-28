@@ -26,20 +26,20 @@ def select_sport(sport):
         #query = "SELECT ID, NAME  from WETTKAMPF where SPORTART='" + sport.upper() + "'"
         #print "query: " + query
         #datatable = olympic.execute(query)
-        datatable = create_datatable("WETTKAMPF", "SPORTART='ALPIN'", "ID", "NAME", "DISZIPLIN")
+        datatable = create_datatable("WETTKAMPF", "WHERE SPORTART='ALPIN'", "ID", "NAME", "DISZIPLIN")
         sport = sport[:1].upper() + sport[1:].lower()
         return {"datatable": datatable ,"sport" : sport, "get_url" : bottle.url} 
     else:
         return {"datatable": datatable ,"sport" : "Sportart existiert nicht!", "get_url" : bottle.url} 
 
         
-def create_datatable(table, where, *spalten):
+def create_datatable(table, condition, *spalten):
     header = spalten
     query = "SELECT "
     for i in spalten:
         query += i.upper() + ", "
     query = query[:len(query)-2] + " "
-    query += "FROM " + table.upper() + " WHERE " + where
+    query += "FROM " + table.upper() + " " + condition.upper()
     olympic = sqlite3.connect('olympic.db')
     print query
     data = olympic.execute(query)
@@ -57,9 +57,8 @@ def add_athlet():
 @route('/search_athlet')
 @view('olympics_searchathlet')
 def search_athlet():
-    olympic = sqlite3.connect('olympic.db')
-    content = olympic.execute("select * from WETTKAMPF");
-    return {"content" : content ,"get_url" : bottle.url}
+    datatable = create_datatable("SPORTLER", "", "VORNAME", "NACHNAME", "GESCHLECHT", "NATIONALITAET")
+    return {"datatable" : datatable ,"get_url" : bottle.url}
 
 #@route('/search_athlet')
 #@view('olympics_searchathlet')
