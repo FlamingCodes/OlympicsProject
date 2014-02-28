@@ -1,12 +1,10 @@
 %include('header.tpl')
 		<div id="content">
-            
+            %include('content_head.tpl', head=sport)
 			<form action="/searchwettkampf" method="post">
+                
                 <table class="search_form">
                     <thead>
-                        <tr>
-                            <th>{{sport}}</th>
-                        </tr>
                     </thead>
                     <tr>
                         <td><label for="id"> ID: </label></td>
