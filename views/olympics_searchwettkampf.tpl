@@ -1,10 +1,11 @@
 %include('header.tpl')
 		<div id="content">
+            
 			<form action="/searchwettkampf" method="post">
-                <table>
+                <table class="search_form">
                     <thead>
                         <tr>
-                            <th><u>Wettkampf:</u></th>
+                            <th>{{sport}}</th>
                         </tr>
                     </thead>
                     <tr>
@@ -37,25 +38,8 @@
                     </tr>
                 </table>
                 <input type="submit" value="submit"/> 
-
-                <table id="datatable1" class="datatable">
-                    <thead><th>ID</th><th>Name</th><th>Startzeit</th><th>Datum</th><th>Disziplin</th><th>Bericht</th><th>Benutzerkommentar</th></thead>
-                    %x = 0
-                    %for col in content:
-                    %x+=1
-                    %y= x % 2
-                    %if y > 0:
-                        <tr>
-                            <td class="colored">{{col[1]}}</td><td class="colored">{{col[2]}}</td><td class="colored">{{col[3]}}</td><td class="colored">{{col[4]}}</td><td class="colored">{{col[5]}}</td><td class="colored">{{col[6]}}</td><td class="colored">{{col[7]}}</td>
-                        </tr>
-                    %else:
-                         <tr>
-                            <td>{{col[1]}}</td><td>{{col[2]}}</td><td>{{col[3]}}</td><td>{{col[4]}}</td><td>{{col[5]}}</td><td>{{col[6]}}</td><td>{{col[7]}}</td>
-                        </tr> 
-                    %end
-                    %end
-                </table>
             </form>
+            %include('datatable.tpl')
 		</div>
 		<div class="breakfloat"></div>
 	</div>

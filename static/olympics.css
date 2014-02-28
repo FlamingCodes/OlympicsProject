@@ -19,7 +19,6 @@ li {
 	border-bottom: 1px solid black;
 }
 
-
 li a {
 	font-size: 13px;
 	font-color: red;
@@ -40,11 +39,12 @@ body {
 
 #header, #content_wrapper , #footer{
 	margin: 10px 10%;
-	width: 80%;
+	
 }
 
 #header {
 	height: 100px;
+    width: 76%;
 }
 
 #content_wrapper {
@@ -53,7 +53,6 @@ body {
 	height: 80%;
 	min-height: 80%;
 	width: 80%;
-
 }
 
 #content, #menu {
@@ -64,16 +63,41 @@ float: left;
 	width: 13%;
 }
 #content {
-    
+    padding: 2% 0 2% 2%;
+    float: right;
 	width: 77%;
 	min-width: 77%;
 	margin-left: 1%;
+    height: 100%;
 }
+
+#sport_table {
+    width: 100%;
+    padding: 1%;
+}
+
+#sport_table td { 
+    height:150px;
+    width: 150px;
+    padding: 1px;
+    text-align: center;
+    border: 1px dotted black;
+}
+
+.search_form {
+    width: 80%;
+}
+
+.search_form th {
+    border-bottom: 1px solid black;
+}
+
 .breakfloat {
 	clear: both;
 }
 #footer {
-	float: left;
+    width: 76%;
+    float: left;
     margin-top: 10px;
 }
 

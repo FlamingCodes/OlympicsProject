@@ -30,7 +30,7 @@
                     </tr>
                 </table>
                 <input type="submit" value="submit"/> 
-
+                   {{content}}
                 <table id="datatable1" class="datatable">
                     <thead><th>ID</th><th>Vorname</th><th>Nachname</th><th>Geschlecht</th><th>Nationaität</th></thead>
                     %x = 0
