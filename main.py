@@ -1,5 +1,6 @@
 from bottle import get, post, route, run, request, view, static_file, template, response
 import bottle, random, sqlite3
+from userdata import Userdata
 
 ### index ###
 @route('/')
@@ -32,7 +33,7 @@ def do_login():
     passwort = request.forms.get("passwort")
     query = "SELECT PASSWORT FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'"
     print query
-    db_passwort = olympics.execute(query).fetchone()[0])
+    db_passwort = str(olympics.execute(query).fetchone()[0])
     print db_passwort
     print "dbpass: " + db_passwort + " pass: " + passwort
     if db_passwort == passwort:
@@ -118,6 +119,14 @@ def add_benutzer():
     user_type = controllAuthification()
     return {"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
     
+@route('/benutzerprofil')
+@view('olympics_benutzerprofil')
+def benutzerprofil():
+    user_type = controllAuthification()
+    user = str(request.get_cookie("user"))
+    userdata = get_userdata(user)
+    return {"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user")), "userdata" : userdata}
+            
 ### database pages ####
 ### Sportler ####
 @route('/commitathlet', method='POST')
@@ -272,5 +281,13 @@ def controllAuthification():
             print "user: " + "None" + ", key: " + "None"
        
     return user_type
-
+    
+    ######################################
+    
+def get_userdata(user):
+    olympic = sqlite3.connect('olympic.db')
+    query = "SELECT BENUTZERNAME, VORNAME, NACHNAME, GEBURTSDATUM, GESCHLECHT, EMAILADRESSE, ORT, LAND, USER_TYPE FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'"
+    cursor = olympic.execute(query).fetchone()
+    return Userdata(cursor)
+            
 run(host='localhost', port=8080, debug=True)

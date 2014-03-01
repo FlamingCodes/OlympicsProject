@@ -20,7 +20,7 @@
                     %end
 				<li class="lh">Benutzerprofil</li>
                     %if user == "Journalist":
-                        <li><a href="menu7">Benutzerprofil</a></li>
+                        <li><a href="benutzerprofil">Benutzerprofil</a></li>
                         <li><a href="menu9">Profil bearbeiten</a></li>
                     %end
                     %if (user != "Journalist" ) and (user != "Benutzer"):
