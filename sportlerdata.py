@@ -1,4 +1,4 @@
-class Userdata():
+class Sportlerdata():
     ###def__init__(self, benutzername, vorname, nachname, geburtsdatum, geschlecht, emailadresse, ort, land, foto, user_name):
     def __init__(self, cursor):
         self.benutzername = str(cursor[0])
@@ -10,7 +10,6 @@ class Userdata():
         self.ort = str(cursor[6])
         self.land = str(cursor[7])
         self.user_name = str(cursor[8])
-        self.id = str(cursor[9])
         
     def benutzername(self):
         return self.benutzername
@@ -38,8 +37,3 @@ class Userdata():
         
     def user_name(self):
         return self.user_name
-        
-    def id(self):
-        return self.id
-
-

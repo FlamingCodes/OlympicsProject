@@ -2,6 +2,7 @@
         <div id="content">
         %include('content_head.tpl', head="Registieren")
             <form action="/commitbenutzer" method="post" enctype="multipart/form-data">
+                <p id="login_failed>">{{message}}</p>
                 <table>
                     <thead>
                     </thead>
@@ -47,9 +48,9 @@
                         <td><input id="foto" type="file" accept="image" name="foto"/> </td>
                     </tr>
                     <tr>
-                        <td><label for="journalist"> Jounalist: </label></td>
-                        <td><input type="radio" name="journalist" value="ja"> Ja<br>
-                            <input type="radio" name="journalist" value="nein"> nein<br> </td>
+                        <td><label for="user_type"> Jounalist: </label></td>
+                        <td><input type="radio" name="user_type" value="Journalist"> Ja<br>
+                            <input type="radio" name="user_Type" value="Benutzer"> nein<br> </td>
                     </tr>
                 </table>
                 <input type="submit" value="submit"/> 

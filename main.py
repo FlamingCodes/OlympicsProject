@@ -1,6 +1,7 @@
 from bottle import get, post, route, run, request, view, static_file, template, response
 import bottle, random, sqlite3
 from userdata import Userdata
+from sportlerdata import Sportlerdata
 
 ### index ###
 @route('/')
@@ -138,7 +139,7 @@ def search_wettkampf():
 @view('olympics_addbenutzer')
 def add_benutzer():
     user_type = controllAuthification()
-    return {"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
+    return {"message" : "", "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
     
 @route('/benutzerprofil')
 @view('olympics_benutzerprofil')
@@ -147,6 +148,14 @@ def benutzerprofil():
     user = str(request.get_cookie("user"))
     userdata = get_userdata(user)
     return {"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user")), "userdata" : userdata}
+    
+#@route('/sportlerprofil')
+#@view('olympics_sportlerprofil')
+#def sportlerprofil():
+#    user_type = controllAuthification()
+#    sportler = str(request.get_cookie("sportler"))
+#    sportlerdata = get_sportlerdata(sportler)
+#    return {"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user")), "userdata" : userdata}
             
 ### database pages ####
 ### Sportler ####
@@ -204,7 +213,6 @@ def commit_wettkampf():
     for i in cursor:
         l.append(i[0])
 
-    #query = "INSERT INTO SPORTLER (VORNAME, NACHNAME, GESCHLECHT, NATIONALITAET) VALUES ('" + request.forms.get("vorname") + "', '" + request.forms.get("nachname") + "', " + woman + ", '" + request.forms.get("nationalitaet") +",)"
     query = "INSERT INTO WETTKAMPF(NAME, DATUM, STARTZEIT, DISZIPLIN, FOTO, BERICHT, BENUTZERKOMMENTAR) VALUES ('" + request.forms.get("name") + "', '" + request.forms.get("datum") + "', '" + request.forms.get("startzeit") + "', '" + request.forms.get("disziplin") + "', '" + request.forms.get("foto") + "', '" + request.forms.get("bericht") + "', '" + request.forms.get("benutzerkommentar") + "' ?)"
     c = olympic.cursor()
     file = request.files.bild
@@ -214,7 +222,6 @@ def commit_wettkampf():
     c.execute(query, bin)
     olympic.commit()
     
-    #olympic.execute(query) #Auskommentieren
     query = "SELECT ID from WETTKAMPF where Name='" + request.forms.get("name") + "'"
     for i in l:
         query += " AND ID IS NOT " + str(i)
@@ -232,42 +239,46 @@ def commit_wettkampf():
 @route('/commitbenutzer', method='POST')
 @view('olympics_benutzer_added')
 def commit_benutzer():
+    message = ""
     user_type = controllAuthification()
     olympic = sqlite3.connect('olympic.db')
     
-    query = "SELECT ID from BENUTZER where Benutzername='" + request.forms.get("benutzername") + "' "
-    cursor = olympic.execute(query)
-    l = []
-    for i in cursor:
-        l.append(i[0])
+    query = "SELECT Benutzername from BENUTZER where Benutzername='" + request.forms.get("benutzername") + "' "
+    cursor = olympic.execute(query).fetchone()
+    if len(cursor) > 0:
+        message = "Benutzername existiert bereits"
+        return template('olympics_addbenutzer.tpl',{"message" : message, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))})
+    else:
+        geschlecht = request.forms.get("geschlecht")
+        if geschlecht == "weiblich":
+            woman = "'TRUE'"
+        elif geschlecht == "maennlich":
+            woman = "'FALSE'"
+            
+        query = "INSERT INTO BENUTZER(BENUTZERNAME, PASSWORT, VORNAME, NACHNAME, GEBURTSDATUM, GESCHLECHT, EMAILADRESSE, ORT, LAND, USER_TYPE) VALUES ('" + str(request.forms.get("benutzername")) + "', '" + str(request.forms.get("passwort")) + "', '" + str(request.forms.get("vorname")) + "', '" + str(request.forms.get("nachname")) + "', '" + str(request.forms.get("geburtsdatum")) + "', " + woman + ", '" + str(request.forms.get("emailadresse")) + "', '" + str(request.forms.get("ort")) + "', '" + str(request.forms.get("land")) + "', '" + str(request.forms.get("user_type")) + "')"
+        #c = olympic.cursor()
+        #file = request.files.bild
+        #raw = file.file.read()
+        #print file.filename
+        #bin = [sqlite3.Binary(file.file.read())]
+        #c.execute(query, bin)
+        print query
+        olympic.execute(query)
+        olympic.commit()
+        user = request.forms.get("benutzername")
+        query = "SELECT ID from BENUTZER where Benutzername='" + request.forms.get("benutzername") + "'"
+        for i in l:
+            query += " AND ID IS NOT " + str(i)
+        print query
+        cursor = olympic.execute(query)
+        x = ""
+        for i in cursor:
+            x = i[0]
+            break
+        return {"userdata" : get_userdata(user), "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
     
-    geschlecht = request.forms.get("geschlecht")
-    if geschlecht == "weiblich":
-        woman = "'TRUE'"
-    elif geschlecht == "maennlich":
-        woman = "'FALSE'"
-    #query = "INSERT INTO SPORTLER (VORNAME, NACHNAME, GESCHLECHT, NATIONALITAET) VALUES ('" + request.forms.get("vorname") + "', '" + request.forms.get("nachname") + "', " + woman + ", '" + request.forms.get("nationalitaet") +",)"
-    query = "INSERT INTO BENUTZER(BENUTZERNAME, VORNAME, NACHNAME, GEBURTSDATUM, GESCHLECHT, EMAILADRESSE, ORT, LAND, FOTO, JOURNALIST) VALUES ('" + request.forms.get("benutzername") + "', '" + request.forms.get("vorname") + "', '" + request.forms.get("nachname") + "', '" + request.forms.get("geburtsdatum") + "', '" + woman + "', '" + request.forms.get("emailadresse") + "', '" + request.forms.get("ort") + "', '" + request.forms.get("land") + "', ?, '" + request.forms.get("journalist") + "' ?)"
-    c = olympic.cursor()
-    file = request.files.bild
-    raw = file.file.read()
-    print file.filename
-    bin = [sqlite3.Binary(file.file.read())]
-    c.execute(query, bin)
-    olympic.commit()
+
     
-    #olympic.execute(query) #Auskommentieren
-    query = "SELECT ID from BENUTZER where Benutzername='" + request.forms.get("benutzername") + "'"
-    for i in l:
-        query += " AND ID IS NOT " + str(i)
-    print query
-    cursor = olympic.execute(query)
-    x = ""
-    for i in cursor:
-        x = i[0]
-        break
-    
-    return {"ID" : x, "benutzername": request.forms.get("benutzernamename"), "vorname": request.forms.get("vorname"), "nachname": request.forms.get("nachname"), "geburtsdatum": request.forms.get("geburtsdatum") , "geschlecht": request.forms.get("geschlecht") , "emailadresse": request.forms.get("emailadresse") , "ort": request.forms.get("ort") , "land": request.forms.get("land") ,  "foto": request.forms.get("foto") , "journalist": request.forms.get("journalist") , "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
 
 @route('/static/:path#.+#', name='static')
 def static(path):
@@ -315,8 +326,9 @@ def logout():
     
 def get_userdata(user):
     olympic = sqlite3.connect('olympic.db')
-    query = "SELECT BENUTZERNAME, VORNAME, NACHNAME, GEBURTSDATUM, GESCHLECHT, EMAILADRESSE, ORT, LAND, USER_TYPE FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'"
+    query = "SELECT BENUTZERNAME, VORNAME, NACHNAME, GEBURTSDATUM, GESCHLECHT, EMAILADRESSE, ORT, LAND, USER_TYPE, ID FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'"
     cursor = olympic.execute(query).fetchone()
     return Userdata(cursor)
+
             
 run(host='localhost', port=8080, debug=True)
