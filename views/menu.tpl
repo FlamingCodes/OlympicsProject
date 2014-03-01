@@ -6,7 +6,7 @@
                 %else:
                     <li class="lh">{{user_name}}</li>
                     <li><a href="/logout">Abmelden</a></li>
-                    <li><a href="menu7">Benutzerprofil</a></li>
+                    <li><a href="benutzerprofil">Benutzerprofil</a></li>
                     <li><a href="menu9">Profil bearbeiten</a></li>
                 %end
             </ul>
@@ -25,18 +25,6 @@
                     %if (user == "Journalist" ) or (user == "Benutzer"):
                         <li><a href="menu5">Benutzerkommentar hinzufügen</a></li>
                     %end
-<<<<<<< HEAD
-=======
-				<li class="lh">Benutzerprofil</li>
-                    %if user == "Journalist":
-                        <li><a href="benutzerprofil">Benutzerprofil</a></li>
-                        <li><a href="menu9">Profil bearbeiten</a></li>
-                    %end
-                    %if (user != "Journalist" ) and (user != "Benutzer"):
-                        <li><a href="/login">Anmelden</a></li>
-                        <li><a href="/add_benutzer">Registrieren</a></li>
-                    %end
->>>>>>> f56201117d6f7a44ee57b915ec66b3a4e0940bf3
 				<li class="lh">Medaillen</li>
 					<li><a href="menu11">Medaillenspiegel</a></li>
 			</ul>
