@@ -219,9 +219,14 @@ def commit_benutzer():
     l = []
     for i in cursor:
         l.append(i[0])
-
+    
+    geschlecht = request.forms.get("geschlecht")
+    if geschlecht == "weiblich":
+        woman = "'TRUE'"
+    elif geschlecht == "maennlich":
+        woman = "'FALSE'"
     #query = "INSERT INTO SPORTLER (VORNAME, NACHNAME, GESCHLECHT, NATIONALITAET) VALUES ('" + request.forms.get("vorname") + "', '" + request.forms.get("nachname") + "', " + woman + ", '" + request.forms.get("nationalitaet") +",)"
-    query = "INSERT INTO BENUTZER(BENUTZERNAME, VORNAME, NACHNAME, GEBURTSDATUM, GESCHLECHT, EMAILADRESSE, ORT, LAND, FOTO, JOURNALIST) VALUES ('" + request.forms.get("benutzername") + "', '" + request.forms.get("vorname") + "', '" + request.forms.get("nachname") + "', '" + request.forms.get("geburtsdatum") + "', '" + request.forms.get("geschlecht") + "', '" + request.forms.get("emailadresse") + "', '" + request.forms.get("ort") + "', '" + request.forms.get("land") + "', '" + request.forms.get("foto") + "', '" + request.forms.get("journalist") + "' ?)"
+    query = "INSERT INTO BENUTZER(BENUTZERNAME, VORNAME, NACHNAME, GEBURTSDATUM, GESCHLECHT, EMAILADRESSE, ORT, LAND, FOTO, JOURNALIST) VALUES ('" + request.forms.get("benutzername") + "', '" + request.forms.get("vorname") + "', '" + request.forms.get("nachname") + "', '" + request.forms.get("geburtsdatum") + "', '" + woman + "', '" + request.forms.get("emailadresse") + "', '" + request.forms.get("ort") + "', '" + request.forms.get("land") + "', ?, '" + request.forms.get("journalist") + "' ?)"
     c = olympic.cursor()
     file = request.files.bild
     raw = file.file.read()
@@ -282,7 +287,7 @@ def controllAuthification():
        
     return user_type
     
-    ######################################
+###############################################
     
 def get_userdata(user):
     olympic = sqlite3.connect('olympic.db')
