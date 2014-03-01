@@ -1,5 +1,6 @@
 from bottle import get, post, route, run, request, view, static_file, template, response
 import bottle, random, sqlite3
+from userdata import Userdata
 
 ### index ###
 @route('/')
@@ -139,6 +140,14 @@ def add_benutzer():
     user_type = controllAuthification()
     return {"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
     
+@route('/benutzerprofil')
+@view('olympics_benutzerprofil')
+def benutzerprofil():
+    user_type = controllAuthification()
+    user = str(request.get_cookie("user"))
+    userdata = get_userdata(user)
+    return {"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user")), "userdata" : userdata}
+            
 ### database pages ####
 ### Sportler ####
 @route('/commitathlet', method='POST')
@@ -231,9 +240,14 @@ def commit_benutzer():
     l = []
     for i in cursor:
         l.append(i[0])
-
+    
+    geschlecht = request.forms.get("geschlecht")
+    if geschlecht == "weiblich":
+        woman = "'TRUE'"
+    elif geschlecht == "maennlich":
+        woman = "'FALSE'"
     #query = "INSERT INTO SPORTLER (VORNAME, NACHNAME, GESCHLECHT, NATIONALITAET) VALUES ('" + request.forms.get("vorname") + "', '" + request.forms.get("nachname") + "', " + woman + ", '" + request.forms.get("nationalitaet") +",)"
-    query = "INSERT INTO BENUTZER(BENUTZERNAME, VORNAME, NACHNAME, GEBURTSDATUM, GESCHLECHT, EMAILADRESSE, ORT, LAND, FOTO, JOURNALIST) VALUES ('" + request.forms.get("benutzername") + "', '" + request.forms.get("vorname") + "', '" + request.forms.get("nachname") + "', '" + request.forms.get("geburtsdatum") + "', '" + request.forms.get("geschlecht") + "', '" + request.forms.get("emailadresse") + "', '" + request.forms.get("ort") + "', '" + request.forms.get("land") + "', '" + request.forms.get("foto") + "', '" + request.forms.get("journalist") + "' ?)"
+    query = "INSERT INTO BENUTZER(BENUTZERNAME, VORNAME, NACHNAME, GEBURTSDATUM, GESCHLECHT, EMAILADRESSE, ORT, LAND, FOTO, JOURNALIST) VALUES ('" + request.forms.get("benutzername") + "', '" + request.forms.get("vorname") + "', '" + request.forms.get("nachname") + "', '" + request.forms.get("geburtsdatum") + "', '" + woman + "', '" + request.forms.get("emailadresse") + "', '" + request.forms.get("ort") + "', '" + request.forms.get("land") + "', ?, '" + request.forms.get("journalist") + "' ?)"
     c = olympic.cursor()
     file = request.files.bild
     raw = file.file.read()
@@ -297,4 +311,12 @@ def logout():
     response.set_cookie("user_type", "")
     response.set_cookie("key", "")
 
+###############################################
+    
+def get_userdata(user):
+    olympic = sqlite3.connect('olympic.db')
+    query = "SELECT BENUTZERNAME, VORNAME, NACHNAME, GEBURTSDATUM, GESCHLECHT, EMAILADRESSE, ORT, LAND, USER_TYPE FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'"
+    cursor = olympic.execute(query).fetchone()
+    return Userdata(cursor)
+            
 run(host='localhost', port=8080, debug=True)
