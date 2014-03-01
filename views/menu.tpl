@@ -1,8 +1,15 @@
-			%if user != "Journalist" and user != "Benutzer":
-                Nicht angemeldet!
-            %else:
-                {{user_name}}
-            %end
+			<ul id="login_state_list">
+                %if user != "Journalist" and user != "Benutzer": 
+                    <li class="lh">Nicht angemeldet</li>
+                    <li><a href="/login">Anmelden</a></li>
+                    <li><a href="/add_benutzer">Registrieren</a></li>
+                %else:
+                    <li class="lh">{{user_name}}</li>
+                    <li><a href="/logout">Abmelden</a></li>
+                    <li><a href="menu7">Benutzerprofil</a></li>
+                    <li><a href="menu9">Profil bearbeiten</a></li>
+                %end
+            </ul>
             <ul>
 				<li class="lh">Sportler</li>
 					<li><a href="/search_athlet">Athleten</a></li>
@@ -17,15 +24,6 @@
                     %end
                     %if (user == "Journalist" ) or (user == "Benutzer"):
                         <li><a href="menu5">Benutzerkommentar hinzufügen</a></li>
-                    %end
-				<li class="lh">Benutzerprofil</li>
-                    %if user == "Journalist":
-                        <li><a href="menu7">Benutzerprofil</a></li>
-                        <li><a href="menu9">Profil bearbeiten</a></li>
-                    %end
-                    %if (user != "Journalist" ) and (user != "Benutzer"):
-                        <li><a href="/login">Anmelden</a></li>
-                        <li><a href="/add_benutzer">Registrieren</a></li>
                     %end
 				<li class="lh">Medaillen</li>
 					<li><a href="menu11">Medaillenspiegel</a></li>

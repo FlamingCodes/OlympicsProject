@@ -6,13 +6,22 @@ import bottle, random, sqlite3
 @view('olympics_index')
 def index():
     user_type = controllAuthification()
-    return {"content" : "Willkommen auf meiner SupiDupi Sochi Seite! Olympia ist vorbei du Spasti!!!", "get_url" : bottle.url , "user" : user_type, "user_name" : str(request.get_cookie("user"))}
+    welcome_message = "Willkommen!"
+    return {"message" : welcome_message , "get_url" : bottle.url , "user" : user_type, "user_name" : str(request.get_cookie("user"))}
+
+@route('/logout')
+@view('olympics_index')
+def pushed_logout():
+    logout()
+    message = "Erfolgreich ausgeloggt!"
+    return  {"message" : message, "get_url" : bottle.url , "user" : "None", "user_name" : "None" }
+    
     
 @route('/login', method='GET')
 @view('olympics_login')
 def login():
     user_type = controllAuthification();
-    return {"get_url" : bottle.url , "user" : user_type, "user_name" : str(request.get_cookie("user"))}
+    return {"get_url" : bottle.url , "user" : user_type, "user_name" : str(request.get_cookie("user")), "message" : [False, ""]}
     
 ### simple pages ####
 @route('/select_sport')
@@ -24,18 +33,27 @@ def select_sport():
 ### ????? pages #######
 
 @route('/do_login', method="POST")
-@view('olympics_login')
+#@view('olympics_login')
 def do_login():
+    user_found = False
+    message = [False, "LogIn fehlgeschalgen!"]
     olympics = sqlite3.connect('olympic.db')
     #user_type = controllAuthification()
     user = request.forms.get("benutzername")
     passwort = request.forms.get("passwort")
     query = "SELECT PASSWORT FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'"
     print query
-    db_passwort = olympics.execute(query).fetchone()[0])
+    db_passwort = olympics.execute(query).fetchone()
+ 
+    if db_passwort != None:
+        user_found = True
+        db_passwort = str(db_passwort[0])
+    else:
+        db_passwort = ""
+
     print db_passwort
     print "dbpass: " + db_passwort + " pass: " + passwort
-    if db_passwort == passwort:
+    if db_passwort == passwort and user_found:
         response.set_cookie("user", user)
         key = str(int(random.random()*1000000000))
         response.set_cookie("key", str(key));
@@ -43,7 +61,10 @@ def do_login():
         print query
         olympics.execute(query)
         olympics.commit()
-        user_type = olympics.execute("SELECT USER_TYPE FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'").fetchone()
+        user_type = str(olympics.execute("SELECT USER_TYPE FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'").fetchone()[0])
+        message = [True, "LogIn erfolgreich. Willkommen, " + user + " :)"]
+        return template('olympics_index.tpl',{"get_url" : bottle.url , "user" : user_type, "user_name" : user, "message" : message[1]})
+
     else:
         print "passworts dont match"
         response.set_cookie("user_type", "None")
@@ -51,7 +72,7 @@ def do_login():
         response.set_cookie("key", "None")
         user_type = "None"
         user = "None"
-    return {"get_url" : bottle.url , "user" : user_type, "user_name" : user}
+    return template('olympics_login.tpl',{"get_url" : bottle.url , "user" : user_type, "user_name" : user, "message" : message})
 
 @route('/select_sport/<sport>')
 @view('olympics_searchwettkampf')
@@ -248,9 +269,8 @@ def controllAuthification():
     query = "SELECT SECURITY_KEY FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'"
     controll_key = olympics.execute(query).fetchone()
     print controll_key
-    if controll_key == None:
-        response.set_cookie("user", "")
-        response.set_cookie("user_type", "")
+    if controll_key == None or controll_key == "":
+        logout()
     else:
         controll_key = str(controll_key[0])
         if key == controll_key:
@@ -267,10 +287,14 @@ def controllAuthification():
                 user_type = "None"
             print "user: " + user + ", key: " + key + ", user_type: " + user_type
         else:
-            response.set_cookie("user", "")
-            response.set_cookie("user_type", "")
+            logout()
             print "user: " + "None" + ", key: " + "None"
        
     return user_type
+    
+def logout():
+    response.set_cookie("user", "")
+    response.set_cookie("user_type", "")
+    response.set_cookie("key", "")
 
 run(host='localhost', port=8080, debug=True)
