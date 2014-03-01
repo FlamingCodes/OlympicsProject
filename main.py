@@ -228,9 +228,9 @@ def controllAuthification():
     key = str(request.get_cookie("key"))
     print "user: " + user + ", key: " + key
     query = "SELECT SECURITY_KEY FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'"
-    controll_key = olympics.execute(query)
+    controll_key = olympics.execute(query).fetchone()
     print controll_key
-    if controll_key== "None":
+    if controll_key == "None":
         response.set_cookie("user", "")
         response.set_cookie("user_type", "")
     elif key == controll_key:
@@ -238,10 +238,10 @@ def controllAuthification():
         key = int(random.random()*1000000000)
         response.set_cookie("key", str(key));
         query = "UPDATE BENUTZER SECURITY_KEY = " + key + " WHERE BENUTZERNAME = '" + user + "'"
-        olympics.execute(query)
+        olympics.execute(query).fetchone()
         olympics.commit()
-        result = olympics.execute("SELECT USER_TYPE FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'")
-        user_type = result[0]
+        result = olympics.execute("SELECT USER_TYPE FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'").fetchone()
+        user_type = result
         print "user: " + user + ", key: " + key
     else:
         response.set_cookie("user", "")
