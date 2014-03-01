@@ -1,4 +1,9 @@
-			<ul>
+			%if user != "Journalist" and user != "Benutzer":
+                Nicht angemeldet!
+            %else:
+                {{user_name}}
+            %end
+            <ul>
 				<li class="lh">Sportler</li>
 					<li><a href="/search_athlet">Athleten</a></li>
                     %if user == "Journalist":
@@ -19,7 +24,7 @@
                         <li><a href="menu9">Profil bearbeiten</a></li>
                     %end
                     %if (user != "Journalist" ) and (user != "Benutzer"):
-                        <li><a href="menu8">Anmelden</a></li>
+                        <li><a href="/login">Anmelden</a></li>
                         <li><a href="/add_benutzer">Registrieren</a></li>
                     %end
 				<li class="lh">Medaillen</li>

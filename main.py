@@ -1,28 +1,57 @@
 from bottle import get, post, route, run, request, view, static_file, template, response
-import bottle
-import sqlite3
+import bottle, random, sqlite3
 
 ### index ###
 @route('/')
 @view('olympics_index')
 def index():
     user_type = controllAuthification()
-    return {"content" : "Willkommen auf meiner SupiDupi Sochi Seite! Olympia ist vorbei du Spasti!!!", "get_url" : bottle.url , "user" : user_type}
-
-@route('/login')
+    return {"content" : "Willkommen auf meiner SupiDupi Sochi Seite! Olympia ist vorbei du Spasti!!!", "get_url" : bottle.url , "user" : user_type, "user_name" : str(request.get_cookie("user"))}
+    
+@route('/login', method='GET')
 @view('olympics_login')
 def login():
-    user_type = controllAuthification()
-    return {"get_url" : bottle.url , "user" : user_type}
+    user_type = controllAuthification();
+    return {"get_url" : bottle.url , "user" : user_type, "user_name" : str(request.get_cookie("user"))}
     
 ### simple pages ####
 @route('/select_sport')
 @view('select_sport')
 def select_sport():
     user_type = controllAuthification()
-    return  {"get_url" : bottle.url, "user" : user_type}
+    return  {"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
     
 ### ????? pages #######
+
+@route('/do_login', method="POST")
+@view('olympics_login')
+def do_login():
+    olympics = sqlite3.connect('olympic.db')
+    #user_type = controllAuthification()
+    user = request.forms.get("benutzername")
+    passwort = request.forms.get("passwort")
+    query = "SELECT PASSWORT FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'"
+    print query
+    db_passwort = str(olympics.execute(query).fetchone()[0])
+    print db_passwort
+    print "dbpass: " + db_passwort + " pass: " + passwort
+    if db_passwort == passwort:
+        response.set_cookie("user", user)
+        key = str(int(random.random()*1000000000))
+        response.set_cookie("key", str(key));
+        query = "UPDATE BENUTZER SET SECURITY_KEY = '" + key + "' WHERE BENUTZERNAME = '" + user + "'"
+        print query
+        olympics.execute(query)
+        olympics.commit()
+        user_type = olympics.execute("SELECT USER_TYPE FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'").fetchone()
+    else:
+        print "passworts dont match"
+        response.set_cookie("user_type", "None")
+        response.set_cookie("user", "None")
+        response.set_cookie("key", "None")
+        user_type = "None"
+        user = "None"
+    return {"get_url" : bottle.url , "user" : user_type, "user_name" : user}
 
 @route('/select_sport/<sport>')
 @view('olympics_searchwettkampf')
@@ -32,20 +61,20 @@ def select_sport(sport):
     datatable = {}
     header = []
     if sport in allowed_sports:
-        datatable = create_datatable("WETTKAMPF", "WHERE SPORTART='ALPIN'", "ID", "NAME", "DISZIPLIN")
+        datatable = create_datatable("WETTKAMPF", "WHERE SPORTART='"+ sport.upper() +"'", "ID", "NAME", "DISZIPLIN")
         sport = sport[:1].upper() + sport[1:].lower()
-        return {"datatable": datatable ,"sport" : sport, "get_url" : bottle.url, "user" : user_type} 
+        return {"datatable": datatable ,"sport" : sport, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))} 
     else:
-        return {"datatable": datatable ,"sport" : "Sportart existiert nicht!", "get_url" : bottle.url, "user" : user_type} 
+        return {"datatable": datatable ,"sport" : "Sportart existiert nicht!", "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))} 
 
         
-def create_datatable(table, condition, *spalten):
+def create_datatable(table, conditions, *spalten):
     header = spalten
     query = "SELECT "
     for i in spalten:
         query += i.upper() + ", "
     query = query[:len(query)-2] + " "
-    query += "FROM " + table.upper() + " " + condition.upper()
+    query += "FROM " + table.upper() + " " + conditions
     olympic = sqlite3.connect('olympic.db')
     print query
     data = olympic.execute(query)
@@ -59,20 +88,21 @@ def create_datatable(table, condition, *spalten):
 @view('olympics_addathlet')
 def add_athlet():
     user_type = controllAuthification()
-    return {"get_url" : bottle.url, "user" : user_type}
+    return {"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
     
 @route('/search_athlet')
 @view('olympics_searchathlet')
 def search_athlet():
     user_type = controllAuthification()
     datatable = create_datatable("SPORTLER", "", "VORNAME", "NACHNAME", "GESCHLECHT", "NATIONALITAET")
-    return {"datatable" : datatable ,"get_url" : bottle.url, "user" : user_type}
+    return {"datatable" : datatable ,"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
+
 
 @route('/add_wettkampf')
 @view('olympics_addwettkampf')
 def add_wettkampf():
     user_type = controllAuthification()
-    return {"get_url" : bottle.url, "user" : user_type}
+    return {"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
 
 @route('/searchwettkampf')
 @view('olympics_searchwettkampf')
@@ -80,13 +110,13 @@ def search_wettkampf():
     user_type = controllAuthification()
     olympic = sqlite3.connect('olympic.db')
     content = olympic.execute("select * from wettkampf");
-    return {"content" : content ,"get_url" : bottle.url, "user" : user_type}
+    return {"content" : content ,"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
 
 @route('/add_benutzer')
 @view('olympics_addbenutzer')
 def add_benutzer():
     user_type = controllAuthification()
-    return {"get_url" : bottle.url, "user" : user_type}
+    return {"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
     
 ### database pages ####
 ### Sportler ####
@@ -107,6 +137,7 @@ def commit_athlet():
         woman = "'TRUE'"
     elif geschlecht == "maennlich":
         woman = "'FALSE'"
+    #query = "INSERT INTO SPORTLER (VORNAME, NACHNAME, GESCHLECHT, NATIONALITAET) VALUES ('" + request.forms.get("vorname") + "', '" + request.forms.get("nachname") + "', " + woman + ", '" + request.forms.get("nationalitaet") +",)"
     query = "INSERT INTO SPORTLER (VORNAME, NACHNAME, GESCHLECHT, NATIONALITAET, FOTO) VALUES ('" + request.forms.get("vorname") + "', '" + request.forms.get("nachname") + "', " + woman + ", '" + request.forms.get("nationalitaet") + "', ?)"
     c = olympic.cursor()
     file = request.files.bild
@@ -127,7 +158,7 @@ def commit_athlet():
         x = i[0]
         break
     
-    return {"ID" : x, "vorname": request.forms.get("vorname"), "nachname": request.forms.get("nachname"), "geschlecht": request.forms.get("geschlecht"), "nationalitaet": request.forms.get("nationalitaet") , "get_url" : bottle.url, "user" : user_type}
+    return {"ID" : x, "vorname": request.forms.get("vorname"), "nachname": request.forms.get("nachname"), "geschlecht": request.forms.get("geschlecht"), "nationalitaet": request.forms.get("nationalitaet") , "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
 
 ### Wettkampf ###
 
@@ -143,6 +174,7 @@ def commit_wettkampf():
     for i in cursor:
         l.append(i[0])
 
+    #query = "INSERT INTO SPORTLER (VORNAME, NACHNAME, GESCHLECHT, NATIONALITAET) VALUES ('" + request.forms.get("vorname") + "', '" + request.forms.get("nachname") + "', " + woman + ", '" + request.forms.get("nationalitaet") +",)"
     query = "INSERT INTO WETTKAMPF(NAME, DATUM, STARTZEIT, DISZIPLIN, FOTO, BERICHT, BENUTZERKOMMENTAR) VALUES ('" + request.forms.get("name") + "', '" + request.forms.get("datum") + "', '" + request.forms.get("startzeit") + "', '" + request.forms.get("disziplin") + "', '" + request.forms.get("foto") + "', '" + request.forms.get("bericht") + "', '" + request.forms.get("benutzerkommentar") + "' ?)"
     c = olympic.cursor()
     file = request.files.bild
@@ -152,6 +184,7 @@ def commit_wettkampf():
     c.execute(query, bin)
     olympic.commit()
     
+    #olympic.execute(query) #Auskommentieren
     query = "SELECT ID from WETTKAMPF where Name='" + request.forms.get("name") + "'"
     for i in l:
         query += " AND ID IS NOT " + str(i)
@@ -162,7 +195,7 @@ def commit_wettkampf():
         x = i[0]
         break
     
-    return {"ID" : x, "name": request.forms.get("name"), "datum": request.forms.get("datum"), "startzeit": request.forms.get("startzeit"), "disziplin": request.forms.get("disziplin") , "foto": request.forms.get("foto") , "bericht": request.forms.get("bericht") , "benutzerkommentar": request.forms.get("benutzerkommentar") , "get_url" : bottle.url, "user" : user_type}
+    return {"ID" : x, "name": request.forms.get("name"), "datum": request.forms.get("datum"), "startzeit": request.forms.get("startzeit"), "disziplin": request.forms.get("disziplin") , "foto": request.forms.get("foto") , "bericht": request.forms.get("bericht") , "benutzerkommentar": request.forms.get("benutzerkommentar") , "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
 
 ### Benutzer registrieren ###
 
@@ -199,7 +232,7 @@ def commit_benutzer():
         x = i[0]
         break
     
-    return {"ID" : x, "benutzername": request.forms.get("benutzernamename"), "vorname": request.forms.get("vorname"), "nachname": request.forms.get("nachname"), "geburtsdatum": request.forms.get("geburtsdatum") , "geschlecht": request.forms.get("geschlecht") , "emailadresse": request.forms.get("emailadresse") , "ort": request.forms.get("ort") , "land": request.forms.get("land") ,  "foto": request.forms.get("foto") , "journalist": request.forms.get("journalist") , "get_url" : bottle.url, "user" : user_type}
+    return {"ID" : x, "benutzername": request.forms.get("benutzernamename"), "vorname": request.forms.get("vorname"), "nachname": request.forms.get("nachname"), "geburtsdatum": request.forms.get("geburtsdatum") , "geschlecht": request.forms.get("geschlecht") , "emailadresse": request.forms.get("emailadresse") , "ort": request.forms.get("ort") , "land": request.forms.get("land") ,  "foto": request.forms.get("foto") , "journalist": request.forms.get("journalist") , "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
 
 @route('/static/:path#.+#', name='static')
 def static(path):
@@ -215,23 +248,28 @@ def controllAuthification():
     query = "SELECT SECURITY_KEY FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'"
     controll_key = olympics.execute(query).fetchone()
     print controll_key
-    if controll_key == "None":
+    if controll_key == None:
         response.set_cookie("user", "")
         response.set_cookie("user_type", "")
-    elif key == controll_key:
-        checkOk = True
-        key = int(random.random()*1000000000)
-        response.set_cookie("key", str(key));
-        query = "UPDATE BENUTZER SECURITY_KEY = " + key + " WHERE BENUTZERNAME = '" + user + "'"
-        olympics.execute(query).fetchone()
-        olympics.commit()
-        result = olympics.execute("SELECT USER_TYPE FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'").fetchone()
-        user_type = result
-        print "user: " + user + ", key: " + key
     else:
-        response.set_cookie("user", "")
-        response.set_cookie("user_type", "")
-        print "user: " + "None" + ", key: " + "None"
+        controll_key = str(controll_key[0])
+        if key == controll_key:
+            checkOk = True
+            key = str(int(random.random()*1000000000))
+            response.set_cookie("key", key)
+            query = "UPDATE BENUTZER SET SECURITY_KEY = " + key + " WHERE BENUTZERNAME = '" + user + "'"
+            olympics.execute(query)
+            olympics.commit()
+            result = olympics.execute("SELECT USER_TYPE FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'").fetchone()
+            if result != None:
+                user_type = str(result[0])
+            else:
+                user_type = "None"
+            print "user: " + user + ", key: " + key + ", user_type: " + user_type
+        else:
+            response.set_cookie("user", "")
+            response.set_cookie("user_type", "")
+            print "user: " + "None" + ", key: " + "None"
        
     return user_type
 

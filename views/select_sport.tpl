@@ -1,5 +1,6 @@
 %include('header.tpl')
         <div id="content">
+            %include('content_head.tpl', head="Sportart")
             <table id="sport_table">
                 <tr>
                     <td><a href="/select_sport/biathlon"><img src="URI" alt="Biathlon"></a></td>
