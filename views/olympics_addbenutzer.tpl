@@ -1,15 +1,17 @@
 %include('header.tpl')
         <div id="content">
+        %include('content_head.tpl', head="Registieren")
             <form action="/commitbenutzer" method="post" enctype="multipart/form-data">
                 <table>
                     <thead>
-                        <tr>
-                            <th><u>Benutzer registrieren:</u></th>
-                        </tr>
                     </thead>
                     <tr>
                         <td><label for="benutzername"> Benutzername: </label></td> 
                         <td><input id="benutzername" type="text" name="benutzername"/> </td>
+                    </tr>
+                     <tr>
+                        <td><label for="passwort"> Passwort: </label></td> 
+                        <td><input id="passwort" type="password" name="passwort"/> </td>
                     </tr>
                     <tr>
                         <td><label for="vorname"> Vorname: </label></td>
