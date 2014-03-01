@@ -41,7 +41,17 @@ body {
 	margin: 10px 10%;
 	
 }
+#login_successful {
+    color: 05E;
+}
 
+#login_failed {
+    color: red;
+}
+
+#login_state_list {
+    margin-bottom: 10px;
+}
 #header {
 	height: 100px;
     width: 76%;

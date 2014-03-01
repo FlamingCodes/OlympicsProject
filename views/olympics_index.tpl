@@ -1,6 +1,6 @@
 %include('header.tpl')
 	<div id="content">
-		{{content}}
+		{{message}}
 	</div>
 	<div class="breakfloat"></div>
 </div>
