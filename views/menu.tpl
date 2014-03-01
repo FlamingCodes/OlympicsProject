@@ -5,7 +5,7 @@
                         <li><a href="add_athlet">Athleten hinzufügen</a></li>
                     %end
 				<li class="lh">Wettkampf</li>
-					<li><a href="/searchwettkampf">Wettkampf</a></li>
+					<li><a href="/select_sport">Wettkampf</a></li>
                     %if user == "Journalist":
                         <li><a href="menu4">Wettkampfbericht hinzufügen</a></li>
                         <li><a href="/add_wettkampf">Wettkampf hinzufügen</a></li>
