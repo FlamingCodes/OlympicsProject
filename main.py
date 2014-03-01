@@ -32,24 +32,20 @@ def select_sport(sport):
     datatable = {}
     header = []
     if sport in allowed_sports:
-        #olympic = sqlite3.connect('olympic.db')
-        #query = "SELECT ID, NAME  from WETTKAMPF where SPORTART='" + sport.upper() + "'"
-        #print "query: " + query
-        #datatable = olympic.execute(query)
-        datatable = create_datatable("WETTKAMPF", "SPORTART='ALPIN'", "ID", "NAME", "DISZIPLIN")
+        datatable = create_datatable("WETTKAMPF", "WHERE SPORTART='ALPIN'", "ID", "NAME", "DISZIPLIN")
         sport = sport[:1].upper() + sport[1:].lower()
         return {"datatable": datatable ,"sport" : sport, "get_url" : bottle.url, "user" : user_type} 
     else:
         return {"datatable": datatable ,"sport" : "Sportart existiert nicht!", "get_url" : bottle.url, "user" : user_type} 
 
         
-def create_datatable(table, where, *spalten):
+def create_datatable(table, condition, *spalten):
     header = spalten
     query = "SELECT "
     for i in spalten:
         query += i.upper() + ", "
     query = query[:len(query)-2] + " "
-    query += "FROM " + table.upper() + " WHERE " + where
+    query += "FROM " + table.upper() + " " + condition.upper()
     olympic = sqlite3.connect('olympic.db')
     print query
     data = olympic.execute(query)
@@ -69,16 +65,8 @@ def add_athlet():
 @view('olympics_searchathlet')
 def search_athlet():
     user_type = controllAuthification()
-    olympic = sqlite3.connect('olympic.db')
-    content = olympic.execute("select * from WETTKAMPF");
-    return {"content" : content ,"get_url" : bottle.url, "user" : user_type}
-
-#@route('/search_athlet')
-#@view('olympics_searchathlet')
-#def teilnahme_an():
-#    olympic = sqlite3.connect('olympic.db')
-#    content = select sportler.ID as wettkampf.sportler_id from SPORTLER, wettkampf where sportler.id = wettkampf.sportler_id;
-#    return {"content" : content ,"get_url" : bottle.url}
+    datatable = create_datatable("SPORTLER", "", "VORNAME", "NACHNAME", "GESCHLECHT", "NATIONALITAET")
+    return {"datatable" : datatable ,"get_url" : bottle.url, "user" : user_type}
 
 @route('/add_wettkampf')
 @view('olympics_addwettkampf')
@@ -119,7 +107,6 @@ def commit_athlet():
         woman = "'TRUE'"
     elif geschlecht == "maennlich":
         woman = "'FALSE'"
-    #query = "INSERT INTO SPORTLER (VORNAME, NACHNAME, GESCHLECHT, NATIONALITAET) VALUES ('" + request.forms.get("vorname") + "', '" + request.forms.get("nachname") + "', " + woman + ", '" + request.forms.get("nationalitaet") +",)"
     query = "INSERT INTO SPORTLER (VORNAME, NACHNAME, GESCHLECHT, NATIONALITAET, FOTO) VALUES ('" + request.forms.get("vorname") + "', '" + request.forms.get("nachname") + "', " + woman + ", '" + request.forms.get("nationalitaet") + "', ?)"
     c = olympic.cursor()
     file = request.files.bild
@@ -156,7 +143,6 @@ def commit_wettkampf():
     for i in cursor:
         l.append(i[0])
 
-    #query = "INSERT INTO SPORTLER (VORNAME, NACHNAME, GESCHLECHT, NATIONALITAET) VALUES ('" + request.forms.get("vorname") + "', '" + request.forms.get("nachname") + "', " + woman + ", '" + request.forms.get("nationalitaet") +",)"
     query = "INSERT INTO WETTKAMPF(NAME, DATUM, STARTZEIT, DISZIPLIN, FOTO, BERICHT, BENUTZERKOMMENTAR) VALUES ('" + request.forms.get("name") + "', '" + request.forms.get("datum") + "', '" + request.forms.get("startzeit") + "', '" + request.forms.get("disziplin") + "', '" + request.forms.get("foto") + "', '" + request.forms.get("bericht") + "', '" + request.forms.get("benutzerkommentar") + "' ?)"
     c = olympic.cursor()
     file = request.files.bild
@@ -166,7 +152,6 @@ def commit_wettkampf():
     c.execute(query, bin)
     olympic.commit()
     
-    #olympic.execute(query) #Auskommentieren
     query = "SELECT ID from WETTKAMPF where Name='" + request.forms.get("name") + "'"
     for i in l:
         query += " AND ID IS NOT " + str(i)

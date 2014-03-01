@@ -34,3 +34,6 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+views/olympics_searchathlet.tpl
+views/olympics_searchathlet.tpl
+views/olympics_searchathlet.tpl
