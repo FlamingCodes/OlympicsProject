@@ -32,7 +32,7 @@ def do_login():
     passwort = request.forms.get("passwort")
     query = "SELECT PASSWORT FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'"
     print query
-    db_passwort = str(olympics.execute(query).fetchone()[0])
+    db_passwort = olympics.execute(query).fetchone()[0])
     print db_passwort
     print "dbpass: " + db_passwort + " pass: " + passwort
     if db_passwort == passwort:
