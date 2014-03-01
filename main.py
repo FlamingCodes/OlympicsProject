@@ -32,7 +32,7 @@ def do_login():
     passwort = request.forms.get("passwort")
     query = "SELECT PASSWORT FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'"
     print query
-    db_passwort = str(olympics.execute(query).fetchone()[0])
+    db_passwort = olympics.execute(query).fetchone()[0])
     print db_passwort
     print "dbpass: " + db_passwort + " pass: " + passwort
     if db_passwort == passwort:
@@ -256,11 +256,11 @@ def controllAuthification():
         if key == controll_key:
             checkOk = True
             key = str(int(random.random()*1000000000))
-            response.set_cookie("key", key)
             query = "UPDATE BENUTZER SET SECURITY_KEY = " + key + " WHERE BENUTZERNAME = '" + user + "'"
             olympics.execute(query)
             olympics.commit()
             result = olympics.execute("SELECT USER_TYPE FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'").fetchone()
+            response.set_cookie("key", key)
             if result != None:
                 user_type = str(result[0])
             else:
