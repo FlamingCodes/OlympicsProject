@@ -5,8 +5,6 @@
             Datum: {{wettkampfdata.datum}} <br/>
             Startzeit: {{wettkampfdata.startzeit}} <br/>
             Disziplin: {{wettkampfdata.disziplin}} <br/>
-            Bericht: {{wettkampfdata.bericht}} <br/>
-            Benutzerkommentar: {{wettkampfdata.benutzerkommentar}} <br/>
             <br/>
             %include('content_head.tpl', head="Berichte")
             %if user == "Journalist":
