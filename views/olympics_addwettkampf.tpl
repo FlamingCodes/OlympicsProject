@@ -1,12 +1,8 @@
 %include('header.tpl')
 		<div id="content">
+            %include('content_head.tpl', head="Wettkampf")
 			<form action="/commitwettkampf" method="post" enctype="multipart/form-data">
                 <table>
-                    <thead>
-                        <tr>
-                            <th><u>Wettkampf:</u></th>
-                        </tr>
-                    </thead>
                     <tr>
                         <td><label for="name"> Wettkampf: </label></td> 
                         <td><input id="name" type="text" name="name"/> </td>

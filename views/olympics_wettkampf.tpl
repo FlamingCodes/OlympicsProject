@@ -7,6 +7,13 @@
             Disziplin: {{wettkampfdata.disziplin}} <br/>
             Bericht: {{wettkampfdata.bericht}} <br/>
             Benutzerkommentar: {{wettkampfdata.benutzerkommentar}} <br/>
+            <br/>
+            %include('content_head.tpl', head="Berichte")
+            %for b in berichte:
+                <a href="/berichte/{{b.id}}">{{b.ueberschrift}}</a><br/>
+            %end
+            <br/>
+            %include('content_head.tpl', head="Teilnehmer")
             %include('datatable.tpl', path="/sportlerprofil")
 		</div>
         <div class="breakfloat"></div>

@@ -6,7 +6,8 @@
             Nachname: {{athlet.nachname}} <br/>
             Geschlecht: {{athlet.geschlecht}} <br/>
             Nationalitaet: {{athlet.nationalitaet}} <br/>
+            %include('datatable.tpl', path="/wettkampf")
 		</div>
 		<div class="breakfloat"></div>
-	</div>
+        </div>
 %include('footer.tpl')

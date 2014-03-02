@@ -3,6 +3,7 @@ import bottle, random, sqlite3
 from userdata import Userdata
 from sportlerdata import Sportlerdata
 from wettkampfdata import Wettkampfdata
+from bericht import Bericht
 
 ### index ###
 @route('/')
@@ -110,6 +111,34 @@ def search_athlet():
     return {"datatable" : datatable ,"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user") )}
 
 
+@route('/search_athlet', method="post")
+@view('olympics_searchathlet')
+def search_athlet():
+    user_type = controllAuthification()
+    vorname = request.forms.get("vorname")
+    nachname = request.forms.get("nachname")
+    geschlecht = request.forms.get("geschlecht")
+    nationalitaet = request.forms.get("nationalitaet")
+    id = request.forms.get("id")
+    if vorname == None:
+        vorname = ""
+    if nachname == None:
+        vorname = ""
+    if geschlecht == None:
+        geschlecht = ""
+    if geschlecht == "weiblich":
+        geschlecht = "True"
+    if geschlecht == "maennlich":
+        geschlecht = "False"
+    if nationalitaet == None:
+        nationalitaet = ""
+    conditions = "WHERE VORNAME LIKE '%" + vorname  +"%' " + "AND NACHNAME LIKE '%" + nachname  +"%' " + "AND GESCHLECHT LIKE '%" + geschlecht  +"%' " + "AND NATIONALITAET LIKE '%" + nationalitaet  +"%' " 
+    if id != None and id != "":
+       conditions += "AND ID = " + id  +" " 
+    print conditions
+    datatable = create_datatable("SPORTLER", conditions, "VORNAME", "NACHNAME", "GESCHLECHT", "NATIONALITAET", "ID")
+    return {"datatable" : datatable ,"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user") )}
+    
 @route('/add_wettkampf')
 @view('olympics_addwettkampf')
 def add_wettkampf():
@@ -132,7 +161,8 @@ def wettkampf(id):
     conditions = '''SPORTLER_WETTKAMPF  AS SW JOIN SPORTLER AS S JOIN WETTKAMPF as w WHERE 
     s.id = sw.sportler_id and sw.wettkampf_id = w.id and w.id = "''' + id + '''" ORDER BY PLATZIERUNG'''
     datatable = create_datatable("",conditions , "s.vorname", "s.nachname", "sw.platzierung", "s.id as ID" )
-    return {"datatable" : datatable, "wettkampfdata" : wettkampf, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
+    berichte = get_berichte(id)
+    return {"berichte" : berichte, "datatable" : datatable, "wettkampfdata" : wettkampf, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
     
 @route('/add_benutzer')
 @view('olympics_addbenutzer')
@@ -390,5 +420,18 @@ def password_check(user, password):
         return True
     else:
         return False
+
+def get_berichte(id):
+    olympic = sqlite3.connect('olympic.db')
+    query = "SELECT b.id FROM WETTKAMPF_BERICHT as wb JOIn BERICHT AS b where b.id = wb.bericht_id and wb.wettkampf_id =" + id
+    print query
+    cursor =olympic.execute(query)
+    berichte = []
+    for c in cursor:
+        print "fetch report from id: " + str(c[0])
+        berichte.append(Bericht(str(c[0])))
+    for b in berichte:
+        print b.ueberschrift
+    return berichte
             
 run(host='localhost', port=8080, debug=True)

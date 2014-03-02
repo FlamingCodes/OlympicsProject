@@ -1,12 +1,8 @@
 %include('header.tpl')
 <div id="content">
 <form action="/search_athlet" method="post">
+%include('content_head.tpl', head="Sportler");
 <table>
-<thead>
-<tr>
-<th><u>Sportler:</u></th>
-</tr>
-</thead>
 <tr>
 <td><label for="id"> ID: </label></td>
 <td><input id="id" type="text" name="id"/> </td>

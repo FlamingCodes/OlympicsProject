@@ -1,6 +1,7 @@
 * {
 	margin: 0;
 	padding: 0;
+    font-family: Calibri;
 }
 
 a {
@@ -23,7 +24,10 @@ li a {
 	font-size: 13px;
 	font-color: red;
 	margin: 1px;
-	font-style: 
+	font-style:
+}    
+li a:hover {
+    color: #09F;
 }
 
 body {
@@ -109,11 +113,17 @@ float: left;
     margin-top: 10px;
 }
 
-#datatable1 {
-    width: 100%;
+.datatable a {
+   color: #09F;
+   font-weight: bold;
+}
+
+.datatable a:hover  {
+    color: red;
 }
 
 .datatable {
+    width: 98%;
     margin-top: 20px;
     border: 1px black solid;
 }

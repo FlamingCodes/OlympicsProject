@@ -11,6 +11,7 @@
             Land: {{userdata.land}} <br/>
             Benutzertyp: {{userdata.user_name}} <br/>
 		</div>
+        %include('datatable.tpl', path="/wettkampf")
 		<div class="breakfloat"></div>
 	</div>
 %include('footer.tpl')

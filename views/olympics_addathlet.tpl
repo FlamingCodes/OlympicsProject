@@ -1,12 +1,8 @@
 %include('header.tpl')
 <div id="content">
+%include('content_head.tpl', head="Sportler hinzufuegen")
 <form action="/commitathlet" method="post" enctype="multipart/form-data">
 <table>
-<thead>
-<tr>
-<th><u>Sportler:</u></th>
-</tr>
-</thead>
 <tr>
 <td><label for="vorname"> Vorname: </label></td>
 <td><input id="vorname" type="text" name="vorname"/> </td>
