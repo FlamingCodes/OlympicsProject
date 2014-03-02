@@ -79,8 +79,37 @@ def select_sport(sport):
         return {"datatable": datatable ,"sport" : sport, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))} 
     else:
         return {"datatable": datatable ,"sport" : "Sportart existiert nicht!", "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))} 
-
-        
+@route('/addreport/<id>')
+@view('olympics_addbericht')
+def add_report(id):
+    user_type = controllAuthification()
+    return {"bericht_id" : id,"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
+    
+@route('/addreport/<id>', method="post")
+@view('olympics_wettkampf')
+def commit_report(id):
+    user_type = controllAuthification()
+    olympic = sqlite3.connect('olympic.db')
+    user_name = request.get_cookie('user') 
+    author_id = str(olympic.execute("SELECT ID FROM BENUTZER WHERE BENUTZERNAME = '" + user_name + "'").fetchone()[0])
+    head = request.forms.get('ueberschrift')
+    report = request.forms.get('bericht')
+    query = "INSERT INTO BERICHT (AUTHOR_ID, BERICHT, UEBERSCHRIFT) VALUES(" + author_id + ", '" + report +"', '" + head + "')" 
+    print query
+    c = olympic.execute(query)
+    report_id = str(c.lastrowid)
+    query = "INSERT INTO WETTKAMPF_BERICHT (BERICHT_ID, WETTKAMPF_ID) VALUES(" + report_id + ", " + id +")" 
+    print query
+    c = olympic.execute(query)
+    olympic.commit()
+   
+    wettkampf = Wettkampfdata(id)
+    conditions = '''SPORTLER_WETTKAMPF  AS SW JOIN SPORTLER AS S JOIN WETTKAMPF as w WHERE 
+    s.id = sw.sportler_id and sw.wettkampf_id = w.id and w.id = "''' + id + '''" ORDER BY PLATZIERUNG'''
+    datatable = create_datatable("",conditions , "s.vorname", "s.nachname", "sw.platzierung", "s.id as ID" )
+    berichte = get_berichte(id)
+    return {"wettkampfdata": wettkampf, "datatable" : datatable, "berichte" : berichte, "bericht_id" : id,"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
+    
 def create_datatable(table, conditions, *spalten):
     x = spalten
     query = "SELECT "
