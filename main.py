@@ -277,6 +277,26 @@ def change_benutzerprofil():
     userdata = get_userdata(user)
     return {"message" : "", "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user")), "userdata" : userdata}
     
+@route('/loescheprofil', method="post")
+@view('olympics_changeprofil')
+def change_loescheprofil():
+    user_type = controllAuthification()
+    passwort = request.forms.get("passwort")
+    user = str(request.get_cookie("user"))
+    if password_check(user, passwort):
+        olympic = sqlite3.connect("olympic.db")
+        query = "DELETE FROM BENUTZER WHERE BENUTZERNAME='" + user + "' "
+        olympic.execute(query)
+        olympic.commit()
+        logout()
+        message = "Profil " + user + " geloescht!"
+        return template('olympics_index.tpl', {"message" : message, "get_url" : bottle.url , "user" : "None", "user_name" : "None" })
+    else:
+        message = "Profil konnte nicht geloescht werden!"
+    return {"userdata" : get_userdata(user), "message" : message, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}    
+
+    
+    
 @route('/sportlerprofil/<id>')
 @view('olympics_athlet')
 def sportlerprofil(id):
@@ -408,6 +428,7 @@ def changebenutzer():
     olympic = sqlite3.connect('olympic.db')
     
     user = str(request.get_cookie("user"))
+    user_id = olympic.execute("SELECT ID FROM BENUTZER WHERE BENUTZERNAME='" + user + "'").fetchone()[0]
     password = str(request.forms.get("passwort"))
     new_username = request.forms.get("Benutzername")
     if password_check(user, password):
@@ -424,7 +445,7 @@ def changebenutzer():
         elif geschlecht == "maennlich":
             woman = "'FALSE'"
             
-        query = "UPDATE BENUTZER SET BENUTZERNAME='" + str(request.forms.get("Benutzername")) + "', passwort='" + str(request.forms.get("passwort")) + "', VORNAME='" + str(request.forms.get("vorname")) + "', NACHNAME='" + str(request.forms.get("nachname")) + "', GEBURTSDATUM='" + str(request.forms.get("geburtsdatum")) + "', GESCHLECHT='" + str(request.forms.get("geschlecht")) + "', EMAILADRESSE='" + str(request.forms.get("emailadresse")) + "', ORT='" + str(request.forms.get("ort")) + "', LAND='" + str(request.forms.get("land")) + "', FOTO='" + str(request.forms.get("foto")) + "', USER_TYPE='" + str(request.forms.get("user_type")) + "' "
+        query = "UPDATE BENUTZER SET BENUTZERNAME='" + str(request.forms.get("Benutzername")) + "', passwort='" + str(request.forms.get("passwort")) + "', VORNAME='" + str(request.forms.get("vorname")) + "', NACHNAME='" + str(request.forms.get("nachname")) + "', GEBURTSDATUM='" + str(request.forms.get("geburtsdatum")) + "', GESCHLECHT='" + str(request.forms.get("geschlecht")) + "', EMAILADRESSE='" + str(request.forms.get("emailadresse")) + "', ORT='" + str(request.forms.get("ort")) + "', LAND='" + str(request.forms.get("land")) + "', FOTO='" + str(request.forms.get("foto")) + "', USER_TYPE='" + str(request.forms.get("user_type")) + "' WHERE ID=" + str(user_id) 
         print query
         olympic.execute(query)
         olympic.commit()

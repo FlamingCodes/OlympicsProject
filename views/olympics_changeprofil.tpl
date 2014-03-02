@@ -11,12 +11,8 @@
                         <td><input id="Benutzername" type="text" name="Benutzername" value="{{userdata.benutzername}}"/> </td>
                     </tr>
                     <tr>
-                        <td><label for="passwort"> altes Passwort: </label></td> 
+                        <td><label for="passwort"> Passwort: </label></td> 
                         <td><input id="passwort" type="password" name="passwort" value=""/> </td>
-                    </tr>
-                    <tr>
-                        <td><label for="passwort_new"> neues Passwort: </label></td> 
-                        <td><input id="passwort_new" type="password" name="passwort_new" value=""/> </td>
                     </tr>
                     <tr>
                         <td><label for="vorname"> Vorname: </label></td>
@@ -57,8 +53,18 @@
                             <input type="radio" name="user_type" value="Benutzer" checked="checked"> nein<br> </td>
                     </tr>
                 </table>
-                <input type="submit" value="submit"/> 
+                <input type="submit" value="submit"/> <br><br>
+                
 
+            </form>
+            <form action="/loescheprofil" method="post" enctype="multipart/form-data">
+                <table>
+                    <tr>
+                        <td><label for="passwort">Passwort: </label></td> 
+                        <td><input id="passwort" type="password" name="passwort" value=""/> </td>
+                    </tr>    
+                </table>
+                <input type="submit" value="Profil loeschen"/>
             </form>
         </div>
         <div class="breakfloat"></div>
