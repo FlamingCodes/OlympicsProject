@@ -2,6 +2,7 @@ from bottle import get, post, route, run, request, view, static_file, template, 
 import bottle, random, sqlite3
 from userdata import Userdata
 from sportlerdata import Sportlerdata
+from wettkampfdata import Wettkampfdata
 
 ### index ###
 @route('/')
@@ -123,12 +124,12 @@ def search_wettkampf():
     content = olympic.execute("select * from wettkampf");
     return {"content" : content ,"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user") )}
 
-@route('/wettkampf')
+@route('/wettkampf/<id>')
 @view('olympics_wettkampf')
-def wettkampf():
+def wettkampf(id):
     user_type = controllAuthification()
-    wettkampfdata = get_wettkampfdata(user)
-    return {"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user")), "userdata" : userdata}    
+    wettkampf = Wettkampfdata(id)
+    return {"wettkampf" : wettkampf, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
     
 @route('/add_benutzer')
 @view('olympics_addbenutzer')
@@ -366,12 +367,6 @@ def get_userdata(user):
     query = "SELECT BENUTZERNAME, VORNAME, NACHNAME, GEBURTSDATUM, GESCHLECHT, EMAILADRESSE, ORT, LAND, USER_TYPE, ID FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'"
     cursor = olympic.execute(query).fetchone()
     return Userdata(cursor)
-    
-def get_wettkampfdata(user):
-    olympic = sqlite3.connect('olympic.db')
-    query = "SELECT NAME, STARTZEIT, DATUM, DISZIPLIN, BERICHT, BENUTZERKOMMENTAR, ID FROM WETTKAMPF WHERE NAME = '" + user + "'"
-    cursor = olympic.execute(query).fetchone()
-    return Wettkampfdata(cursor)
 
 def password_check(user, password):
     olympic = sqlite3.connect('olympic.db')
