@@ -253,7 +253,98 @@ def bericht(id):
     datatable = create_datatable("", conditions , "k.KOMMENTAR")
     bericht = Bericht(id)
     return {"bericht" : bericht, "datatable" : datatable,  "wettkampfdata" : wettkampf, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
+
+@route('/remove_athlet_from_contest/<contest_id>')
+@view('remove_athlet_from_contest')    
+def remove_athlet_from_contest(contest_id): 
+    user_type = controllAuthification()
+    olympic = sqlite3.connect('olympic.db')
+    query = "SELECT SPORTLER_ID FROM SPORTLER_WETTKAMPF AS SW  WHERE SW.WETTKAMPF_ID =" + contest_id
+    cursor = olympic.execute(query)
+    starter_list = []
+    for c in cursor:
+        starter_list.append(c[0])
+    print "Starterlist: " + str(starter_list)
+    conditions = "WHERE ID IN (" + str(starter_list)[1:len(str(starter_list))-1] +")"
+    message =""
+    datatable = create_datatable("SPORTLER", conditions, "VORNAME", "NACHNAME", "NATIONALITAET", "ID")
+    contest_name = str(olympic.execute("SELECT NAME FROM WETTKAMPF WHERE ID = " + contest_id).fetchone()[0])
+    print "contest_name: " + contest_name
+    return {"wettkampf_id": contest_id, "wettkampfname" : contest_name, "message" : "", "datatable" : datatable, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
+
+@route('/remove_athlet_from_contest/<contest_id>/<sportler_id>')
+@view('remove_athlet_from_contest')    
+def remove_athlet_from_contest(contest_id, sportler_id): 
+    user_type = controllAuthification()
+
+    olympic = sqlite3.connect('olympic.db')
+    query = "DELETE FROM SPORTLER_WETTKAMPF WHERE WETTKAMPF_ID=" + contest_id + " and SPORTLER_ID=" +sportler_id
+    print query
+    cursor = olympic.execute(query)
+    olympic.commit()
+
+    query = "SELECT SPORTLER_ID FROM SPORTLER_WETTKAMPF AS SW  WHERE SW.WETTKAMPF_ID =" + contest_id
+    cursor = olympic.execute(query)
+    starter_list = []
+    for c in cursor:
+        starter_list.append(c[0])
+    print "Starterlist: " + str(starter_list)
+    conditions = "WHERE ID IN (" + str(starter_list)[1:len(str(starter_list))-1] +")"
     
+    datatable = create_datatable("SPORTLER", conditions, "VORNAME", "NACHNAME", "NATIONALITAET", "ID")
+    contest_name = str(olympic.execute("SELECT NAME FROM WETTKAMPF WHERE ID = " + contest_id).fetchone()[0])
+    print "contest_name: " + contest_name
+    return {"wettkampf_id": contest_id, "wettkampfname" : contest_name, "message" : "", "datatable" : datatable, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
+    
+    
+@route('/add_athlet_to_contest/<contest_id>')
+@view('add_athlet_to_contest')    
+def add_athlet_to_contest(contest_id): 
+    user_type = controllAuthification()
+    olympic = sqlite3.connect('olympic.db')
+    query = "SELECT SPORTLER_ID FROM SPORTLER_WETTKAMPF AS SW  WHERE SW.WETTKAMPF_ID =" + contest_id
+    cursor = olympic.execute(query)
+    starter_list = []
+    for c in cursor:
+        starter_list.append(c[0])
+    print "Starterlist: " + str(starter_list)
+    conditions = "WHERE ID NOT IN (" + str(starter_list)[1:len(str(starter_list))-1] +")"
+    message =""
+    datatable = create_datatable("SPORTLER", conditions, "VORNAME", "NACHNAME", "NATIONALITAET", "ID")
+    contest_name = str(olympic.execute("SELECT NAME FROM WETTKAMPF WHERE ID = " + contest_id).fetchone()[0])
+    print "contest_name: " + contest_name
+    return {"wettkampf_id": contest_id, "wettkampfname" : contest_name, "message" : "", "datatable" : datatable, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
+
+@route('/add_athlet_to_contest/<contest_id>/<sportler_id>')
+@view('add_athlet_to_contest')    
+def add_athlet_to_contest(contest_id, sportler_id): 
+    user_type = controllAuthification()
+    olympic = sqlite3.connect('olympic.db')
+    query = "SELECT SPORTLER_ID, WETTKAMPF_ID FROM SPORTLER_WETTKAMPF";
+    contest_sportler_list = olympic.execute(query).fetchall()
+    print contest_sportler_list
+    print (sportler_id, contest_id)
+    if (int(sportler_id), int(contest_id)) not in contest_sportler_list:
+        query = "INSERT INTO SPORTLER_WETTKAMPF(SPORTLER_ID, WETTKAMPF_ID) VALUES(" + sportler_id + ", " + contest_id +")" 
+        print query
+        c = olympic.execute(query)
+        olympic.commit()
+
+    olympic = sqlite3.connect('olympic.db')
+    query = "SELECT SPORTLER_ID FROM SPORTLER_WETTKAMPF AS SW  WHERE SW.WETTKAMPF_ID =" + contest_id
+    cursor = olympic.execute(query)
+    starter_list = []
+    for c in cursor:
+        starter_list.append(c[0])
+    print "Starterlist: " + str(starter_list)
+    conditions = "WHERE ID NOT IN (" + str(starter_list)[1:len(str(starter_list))-1] +")"
+    message =""
+    datatable = create_datatable("SPORTLER", conditions, "VORNAME", "NACHNAME", "NATIONALITAET", "ID")
+    contest_name = str(olympic.execute("SELECT NAME FROM WETTKAMPF WHERE ID = " + contest_id).fetchone()[0])
+    print "contest_name: " + contest_name
+    return {"wettkampf_id": contest_id, "wettkampfname" : contest_name, "message" : "", "datatable" : datatable, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
+    
+  
 @route('/add_benutzer')
 @view('olympics_addbenutzer')
 def add_benutzer():
@@ -364,6 +455,32 @@ def commit_wettkampf():
     
     return {"ID" : x, "sportart": request.forms.get("sportart"), "name": request.forms.get("name"), "datum": str(request.forms.get("datum")), "startzeit": str(request.forms.get("startzeit")), "disziplin": request.forms.get("disziplin"), "foto": request.forms.get("foto"), "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user") )}
 
+@route('/medallien_spiegel')
+@view('olympics_medallien_spiegel')
+def medallien_spiegel(): 
+    user_type = controllAuthification()
+
+    olympic = sqlite3.connect('olympic.db')
+
+    nations = get_nations()
+    f = []
+    for key in nations:
+        query = "SELECT s.NATIONALITAET FROM SPORTLER AS S JOIN SPORTLER_WETTKAMPF AS SW WHERE S.ID = SW.SPORTLER_ID and sw.PLATZIERUNG = 1 and NATIONALITAET = '" + key + "'"
+        gold =   len(olympic.execute(query).fetchall())
+        query = "SELECT s.NATIONALITAET FROM SPORTLER AS S JOIN SPORTLER_WETTKAMPF AS SW WHERE S.ID = SW.SPORTLER_ID and sw.PLATZIERUNG = 2 and NATIONALITAET = '" + key + "'"
+        silver = len(olympic.execute(query).fetchall())
+        query = "SELECT s.NATIONALITAET FROM SPORTLER AS S JOIN SPORTLER_WETTKAMPF AS SW WHERE S.ID = SW.SPORTLER_ID and sw.PLATZIERUNG = 3 and NATIONALITAET = '" + key + "'"
+        bronce = len(olympic.execute(query).fetchall())
+        f.append((key, gold,silver, bronce))
+    
+    f = sorted(f, key=lambda tup: tup[1], reverse=True)
+
+        
+    print f
+    datatable = [("Nation","Gold", "Silber", "Bronze"), f]
+    return {"datatable" : datatable, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user") )}
+
+    
 ### Benutzer registrieren ###
 
 @route('/commitbenutzer', method='POST')
@@ -516,5 +633,9 @@ def get_berichte(id):
     for b in berichte:
         print b.ueberschrift
     return berichte
+    
+def get_nations():
+    liste = ["Russland", "Norwegen", "Kanada", "USA", "Niederlande", "Deutschland", "Schweiz", "Weissrussland", "Oesterreich", "Frankreich", "Polen", "China", "Suedkorea", "Schweden", "Tschechien", "Slowenien", "Japan", "Finnland", "VereinigtesKoenigreichGrossbritannien", "Ukraine", "Slowakei", "Italien", "Lettland", "Australien", "Kroatien", "Kasachstan"]
+    return liste
             
 run(host='localhost', port=8080, debug=True)

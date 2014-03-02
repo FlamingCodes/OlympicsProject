@@ -1,0 +1,7 @@
+list = ("deutsch", "deutsch", "English")
+set = set(list)
+
+dict
+for s in set:
+    dict[s] = list.count(s)
+print dict
