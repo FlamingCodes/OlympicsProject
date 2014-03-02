@@ -1,19 +1,27 @@
+import sqlite3
+
 class Sportlerdata():
     ###def__init__(self, benutzername, vorname, nachname, geburtsdatum, geschlecht, emailadresse, ort, land, foto, user_name):
-    def __init__(self, cursor):
-        self.benutzername = str(cursor[0])
+    def __init__(self, id):
+        olympic = sqlite3.connect('olympic.db')
+        query = "SELECT ID, VORNAME, NACHNAME, GEBURTSDATUM, GESCHLECHT, NATIONALITAET FROM SPORTLER WHERE ID =" + id
+        print query
+        cursor = olympic.execute(query).fetchone()
+        print cursor
+        self.id = str(cursor[0])
         self.vorname = str(cursor[1])
         self.nachname = str(cursor[2])
         self.geburtsdatum = str(cursor[3])
-        self.geschlecht = str(cursor[4])
-        self.emailadresse = str(cursor[5])
-        self.ort = str(cursor[6])
-        self.land = str(cursor[7])
-        self.user_name = str(cursor[8])
         
-    def benutzername(self):
-        return self.benutzername
-    
+        if str(cursor[4]).upper() == "TRUE":
+            self.geschlecht = "Weiblich"
+        else: 
+            self.geschlecht = "Maennlich"
+
+        self.nationalitaet = str(cursor[5])
+        
+    def id(self):
+        return self.id
     def vorname(self):
         return self.vorname 
     
@@ -21,19 +29,10 @@ class Sportlerdata():
         return self.nachname
         
     def geburtsdatum(self):
-        return self.geburtdatum
+        return self.geburtsdatum
         
     def geschlecht(self):
         return self.geschlecht
         
-    def emailadresse(self):
-        return self.emailadresse
-        
-    def ort(self):
-        return self.ort
-        
-    def land(self):
-        return self.land
-        
-    def user_name(self):
-        return self.user_name
+    def nationalitaet(self):
+        return self.nationalitaet

@@ -30,7 +30,7 @@
 </tr>
 </table>
 <input type="submit" value="submit"/>
-%include('datatable.tpl')
+%include('datatable.tpl', path="sportlerprofil")
 </form>
 </div>
 <div class="breakfloat"></div>

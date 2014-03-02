@@ -116,7 +116,7 @@ def add_athlet():
 @view('olympics_searchathlet')
 def search_athlet():
     user_type = controllAuthification()
-    datatable = create_datatable("SPORTLER", "", "VORNAME", "NACHNAME", "GESCHLECHT", "NATIONALITAET")
+    datatable = create_datatable("SPORTLER", "", "VORNAME", "NACHNAME", "GESCHLECHT", "NATIONALITAET", "ID")
     return {"datatable" : datatable ,"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user") )}
 
 
@@ -149,13 +149,13 @@ def benutzerprofil():
     userdata = get_userdata(user)
     return {"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user")), "userdata" : userdata}
     
-#@route('/sportlerprofil')
-#@view('olympics_sportlerprofil')
-#def sportlerprofil():
-#    user_type = controllAuthification()
-#    sportler = str(request.get_cookie("sportler"))
-#    sportlerdata = get_sportlerdata(sportler)
-#    return {"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user")), "userdata" : userdata}
+@route('/sportlerprofil/<id>')
+@view('olympics_athlet')
+def sportlerprofil(id):
+    print "ID: " + id
+    user_type = controllAuthification()
+    athlet = Sportlerdata(id)
+    return {"athlet" : athlet, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
             
 ### database pages ####
 ### Sportler ####
