@@ -186,11 +186,15 @@ def search_wettkampf():
 @view('olympics_searchwettkampf')
 def search_wettkampf(sport):
     user_type = controllAuthification()
+    sportart = request.forms.get("sportart")
+    print sportart
     name = request.forms.get("name")
     startzeit = str(request.forms.get("startzeit"))
     datum = str(request.forms.get("datum"))
     disziplin = request.forms.get("disziplin")
     id = request.forms.get("id")
+    if sportart == None:
+        sportart = ""    
     if name == None:
         name = ""
     if startzeit == None:
@@ -199,11 +203,11 @@ def search_wettkampf(sport):
         datum = ""
     if disziplin == None:
         disziplin = ""
-    conditions = "WHERE NAME LIKE '%" + name  +"%' " + "AND STARTZEIT LIKE '%" + startzeit +"%' " + "AND DATUM LIKE '%" + datum  +"%' " + "AND DISZIPLIN LIKE '%" + disziplin  +"%' " 
+    conditions = "WHERE SPORTART LIKE '%" + sportart  +"%' " + "AND NAME LIKE '%" + name  +"%' " + "AND STARTZEIT LIKE '%" + startzeit +"%' " + "AND DATUM LIKE '%" + datum  +"%' " + "AND DISZIPLIN LIKE '%" + disziplin  +"%' " 
     if id != None and id != "":
        conditions += "AND ID = " + id  +" " 
     print conditions
-    datatable = create_datatable("WETTKAMPF", conditions, "NAME", "STARTZEIT", "DATUM", "DISZIPLIN", "ID")
+    datatable = create_datatable("WETTKAMPF", conditions, "SPORTART","NAME", "STARTZEIT", "DATUM", "DISZIPLIN", "ID")
     #print "datatable" + str(datatable[1].fetchone())
     return {"datatable" : datatable , "sport" : sport, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user") )}
 
@@ -332,13 +336,14 @@ def commit_wettkampf():
     user_type = controllAuthification()
     olympic = sqlite3.connect('olympic.db')
     
-    query = "SELECT ID from WETTKAMPF where name='" + request.forms.get("name") + "' AND disziplin='" + request.forms.get("disziplin") + "'"
+    query = "SELECT ID from WETTKAMPF where name='" + request.forms.get("name") + "' "
     cursor = olympic.execute(query)
     l = []
     for i in cursor:
         l.append(i[0])
 
-    query = "INSERT INTO WETTKAMPF(NAME, DATUM, STARTZEIT, DISZIPLIN, FOTO) VALUES ('" + request.forms.get("name") + "', '" + str(request.forms.get("datum")) + "', '" + str(request.forms.get("startzeit")) + "', '" + request.forms.get("disziplin") + "', ?)"
+    query = "INSERT INTO WETTKAMPF(SPORTART, NAME, DATUM, STARTZEIT, DISZIPLIN, FOTO) VALUES ('" + request.forms.get("sportart") + "', '" + request.forms.get("name") + "', '" + str(request.forms.get("datum")) + "', '" + str(request.forms.get("startzeit")) + "', '" + request.forms.get("disziplin") + "', ?)"
+    print query
     c = olympic.cursor()
     file = request.files.foto
     raw = file.file.read()
@@ -357,7 +362,7 @@ def commit_wettkampf():
         x = i[0]
         break
     
-    return {"ID" : x, "name": request.forms.get("name"), "datum": str(request.forms.get("datum")), "startzeit": str(request.forms.get("startzeit")), "disziplin": request.forms.get("disziplin"), "foto": request.forms.get("foto"), "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user") )}
+    return {"ID" : x, "sportart": request.forms.get("sportart"), "name": request.forms.get("name"), "datum": str(request.forms.get("datum")), "startzeit": str(request.forms.get("startzeit")), "disziplin": request.forms.get("disziplin"), "foto": request.forms.get("foto"), "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user") )}
 
 ### Benutzer registrieren ###
 

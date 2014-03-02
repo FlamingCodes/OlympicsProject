@@ -11,6 +11,32 @@
                         <td><input id="id" type="text" name="id"/> </td>
                     </tr>
                     <tr>
+                        <td><h5>Bitte waehlen Sie ihre Sportart aus!</h5></td>
+                        <td>
+                            <form action="select.htm">
+                                <p>
+                                <select name="sportart" size="3">
+                                    <option>Alpin</option>
+                                    <option>Biathlon</option>
+                                    <option>Bob</option>
+                                    <option>Curling</option>
+                                    <option>Eishockey</option>
+                                    <option>Eiskunstlauf</option>
+                                    <option>Eisschnelllauf</option>
+                                    <option>Freestyle-Skiing</option>
+                                    <option>Nordische Kombination</option>
+                                    <option>Ronnrodeln</option>
+                                    <option>Shorttrack</option>
+                                    <option>Skeleton</option>
+                                    <option>Skilanglauf</option>
+                                    <option>Skispringen</option>
+                                    <option>Snowboard</option>
+                                </select>
+                                </p>
+                               </form>
+                        </td>
+                    </tr>
+                    <tr>
                         <td><label for="name"> Name: </label></td>
                         <td><input id="name" type="text" name="name"/> </td>
                     </tr>

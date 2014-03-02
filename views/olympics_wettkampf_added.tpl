@@ -2,6 +2,7 @@
 		<div id="content">
             Wettkampf hinzugefügt: <br/>
             ID: {{ID}} <br/>
+            Startzeit: {{startzeit}} <br/>
             Name: {{name}} <br/>
             Datum: {{datum}} <br/>
             Startzeit: {{startzeit}} <br/>
