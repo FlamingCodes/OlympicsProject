@@ -7,7 +7,8 @@
             Disziplin: {{wettkampfdata.disziplin}} <br/>
             Bericht: {{wettkampfdata.bericht}} <br/>
             Benutzerkommentar: {{wettkampfdata.benutzerkommentar}} <br/>
+            %include('datatable.tpl', path="/sportlerprofil")
 		</div>
-		<div class="breakfloat"></div>
+        <div class="breakfloat"></div>
 	</div>
 %include('footer.tpl')

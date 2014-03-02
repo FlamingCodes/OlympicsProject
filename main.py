@@ -91,7 +91,7 @@ def create_datatable(table, conditions, *spalten):
     print query
     data = olympic.execute(query)
     
-    datatable = [x, data]
+    datatable = [list(map(lambda x: x[0], data.description)), data]
     return datatable
     
     
@@ -129,7 +129,10 @@ def search_wettkampf():
 def wettkampf(id):
     user_type = controllAuthification()
     wettkampf = Wettkampfdata(id)
-    return {"wettkampf" : wettkampf, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
+    conditions = '''SPORTLER_WETTKAMPF  AS SW JOIN SPORTLER AS S JOIN WETTKAMPF as w WHERE 
+    s.id = sw.sportler_id and sw.wettkampf_id = w.id and w.id = "''' + id + '''" ORDER BY PLATZIERUNG'''
+    datatable = create_datatable("",conditions , "s.vorname", "s.nachname", "sw.platzierung", "s.id as ID" )
+    return {"datatable" : datatable, "wettkampfdata" : wettkampf, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
     
 @route('/add_benutzer')
 @view('olympics_addbenutzer')
@@ -160,7 +163,9 @@ def sportlerprofil(id):
     print "ID: " + id
     user_type = controllAuthification()
     athlet = Sportlerdata(id)
-    return {"athlet" : athlet, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
+    conditions ='''SPORTLER_WETTKAMPF AS SW JOIN SPORTLER AS S JOIN WETTKAMPF as w WHERE s.id = sw.sportler_id and sw.wettkampf_id = w.id and s.id = ''' + id
+    datatable = create_datatable("", conditions, "w.name", "w.disziplin", "w.datum", "sw.platzierung", "w.id")
+    return {"datatable" : datatable, "athlet" : athlet, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
             
 ### database pages ####
 ### Sportler ####

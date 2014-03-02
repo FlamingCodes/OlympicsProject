@@ -12,13 +12,13 @@ class Wettkampfdata():
         self.name = str(cursor[1])
         self.datum = str(cursor[2])
         self.startzeit = str(cursor[3])
-		self.disziplin = str(cursor[4])
-		self.bericht = str(cursor[5])
-		self.benutzerkommentar = str(cursor[6])
+        self.disziplin = str(cursor[4])
+        self.bericht = str(cursor[5])
+        self.benutzerkommentar = str(cursor[6])
         
     def id(self):
         return self.id
-		
+        
     def name(self):
         return self.name 
     
@@ -33,6 +33,6 @@ class Wettkampfdata():
         
     def bericht(self):
         return self.bericht
-		
-	def benutzerkommentar(self):
+        
+    def benutzerkommentar(self):
         return self.benutzerkommentar
