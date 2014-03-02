@@ -123,6 +123,13 @@ def search_wettkampf():
     content = olympic.execute("select * from wettkampf");
     return {"content" : content ,"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user") )}
 
+@route('/wettkampf')
+@view('olympics_wettkampf')
+def wettkampf():
+    user_type = controllAuthification()
+    wettkampfdata = get_wettkampfdata(user)
+    return {"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user")), "userdata" : userdata}    
+    
 @route('/add_benutzer')
 @view('olympics_addbenutzer')
 def add_benutzer():
@@ -359,6 +366,12 @@ def get_userdata(user):
     query = "SELECT BENUTZERNAME, VORNAME, NACHNAME, GEBURTSDATUM, GESCHLECHT, EMAILADRESSE, ORT, LAND, USER_TYPE, ID FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'"
     cursor = olympic.execute(query).fetchone()
     return Userdata(cursor)
+    
+def get_wettkampfdata(user):
+    olympic = sqlite3.connect('olympic.db')
+    query = "SELECT NAME, STARTZEIT, DATUM, DISZIPLIN, BERICHT, BENUTZERKOMMENTAR, ID FROM WETTKAMPF WHERE NAME = '" + user + "'"
+    cursor = olympic.execute(query).fetchone()
+    return Wettkampfdata(cursor)
 
 def password_check(user, password):
     olympic = sqlite3.connect('olympic.db')
