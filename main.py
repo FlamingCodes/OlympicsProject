@@ -42,20 +42,9 @@ def do_login():
     olympics = sqlite3.connect('olympic.db')
     #user_type = controllAuthification()
     user = request.forms.get("benutzername")
-    passwort = request.forms.get("passwort")
-    query = "SELECT PASSWORT FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'"
-    print query
-    db_passwort = olympics.execute(query).fetchone()
- 
-    if db_passwort != None:
-        user_found = True
-        db_passwort = str(db_passwort[0])
-    else:
-        db_passwort = ""
-
-    print db_passwort
-    print "dbpass: " + db_passwort + " pass: " + passwort
-    if db_passwort == passwort and user_found:
+    password = request.forms.get("passwort")
+    
+    if password_check(user, password):
         response.set_cookie("user", user,path='/')
         key = str(int(random.random()*1000000000))
         response.set_cookie("key", str(key),path='/' )
@@ -68,10 +57,10 @@ def do_login():
         return template('olympics_index.tpl',{"get_url" : bottle.url , "user" : user_type, "user_name" : user, "message" : message[1]})
 
     else:
-        print "passworts dont match"
-        response.set_cookie("user_type", "None",path='/')
-        response.set_cookie("user", "None",path='/')
-        response.set_cookie("key", key,path='/')
+        print "passwords dont match"
+        response.set_cookie("user_type", "None", path='/')
+        response.set_cookie("user", "None", path='/')
+        response.set_cookie("key", "None" , path='/')
         user_type = "None"
         user = "None"
     return template('olympics_login.tpl',{"get_url" : bottle.url , "user" : user_type, "user_name" : user, "message" : message})
@@ -148,6 +137,14 @@ def benutzerprofil():
     user = str(request.get_cookie("user") )
     userdata = get_userdata(user)
     return {"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user")), "userdata" : userdata}
+
+@route('/changeprofil')
+@view('olympics_changeprofil')
+def change_benutzerprofil():
+    user_type = controllAuthification()
+    user = str(request.get_cookie("user") )
+    userdata = get_userdata(user)
+    return {"message" : "", "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user")), "userdata" : userdata}
     
 @route('/sportlerprofil/<id>')
 @view('olympics_athlet')
@@ -236,7 +233,7 @@ def commit_wettkampf():
 ### Benutzer registrieren ###
 
 @route('/commitbenutzer', method='POST')
-@view('olympics_benutzerprofil')
+@view('olympics_benutzer_added')
 def commit_benutzer():
     message = ""
     user_type = controllAuthification()
@@ -244,7 +241,7 @@ def commit_benutzer():
     
     query = "SELECT Benutzername from BENUTZER where Benutzername='" + request.forms.get("benutzername") + "' "
     cursor = olympic.execute(query).fetchone()
-    if cursor != None:
+    if len(cursor) > 0:
         message = "Benutzername existiert bereits"
         return template('olympics_addbenutzer.tpl',{"message" : message, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))})
     else:
@@ -254,7 +251,7 @@ def commit_benutzer():
         elif geschlecht == "maennlich":
             woman = "'FALSE'"
             
-        query = "INSERT INTO BENUTZER(BENUTZERNAME, PASSWORT, VORNAME, NACHNAME, GEBURTSDATUM, GESCHLECHT, EMAILADRESSE, ORT, LAND, USER_TYPE) VALUES ('" + str(request.forms.get("benutzername")) + "', '" + str(request.forms.get("passwort")) + "', '" + str(request.forms.get("vorname")) + "', '" + str(request.forms.get("nachname")) + "', '" + str(request.forms.get("geburtsdatum")) + "', " + woman + ", '" + str(request.forms.get("emailadresse")) + "', '" + str(request.forms.get("ort")) + "', '" + str(request.forms.get("land")) + "', '" + str(request.forms.get("user_type")) + "')"
+        query = "INSERT INTO BENUTZER(BENUTZERNAME, password, VORNAME, NACHNAME, GEBURTSDATUM, GESCHLECHT, EMAILADRESSE, ORT, LAND, USER_TYPE) VALUES ('" + str(request.forms.get("benutzername")) + "', '" + str(request.forms.get("password")) + "', '" + str(request.forms.get("vorname")) + "', '" + str(request.forms.get("nachname")) + "', '" + str(request.forms.get("geburtsdatum")) + "', " + woman + ", '" + str(request.forms.get("emailadresse")) + "', '" + str(request.forms.get("ort")) + "', '" + str(request.forms.get("land")) + "', '" + str(request.forms.get("user_type")) + "')"
         #c = olympic.cursor()
         #file = request.files.bild
         #raw = file.file.read()
@@ -265,11 +262,53 @@ def commit_benutzer():
         olympic.execute(query)
         olympic.commit()
         user = request.forms.get("benutzername")
+        query = "SELECT ID from BENUTZER where Benutzername='" + request.forms.get("benutzername") + "'"
+        for i in l:
+            query += " AND ID IS NOT " + str(i)
+        print query
+        cursor = olympic.execute(query)
+        x = ""
+        for i in cursor:
+            x = i[0]
+            break
         return {"userdata" : get_userdata(user), "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
-    
 
+        
+@route('/changebenutzer', method='POST')
+@view('olympics_changeprofil') 
+def changebenutzer():
+    message = ""
+    user_type = controllAuthification()
+    olympic = sqlite3.connect('olympic.db')
     
+    user = str(request.get_cookie("user"))
+    password = str(request.forms.get("passwort"))
+    new_username = request.forms.get("Benutzername")
+    if password_check(user, password):
+        if user != new_username:
+            query = "SELECT BENUTZERNAME FROM BENUTZER WHERE BENUTZERNAME ='" + new_username +"'"
+            cursor = olympic.execute(query).fetchone()
+            if cursor != None:
+                message = "Benutzername existiert bereits"
+                print "1"
+                return {"userdata" : get_userdata(user), "message" : message, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
+        geschlecht = request.forms.get("geschlecht")
+        if geschlecht == "weiblich":
+            woman = "'TRUE'"
+        elif geschlecht == "maennlich":
+            woman = "'FALSE'"
+            
+        query = "UPDATE BENUTZER SET BENUTZERNAME='" + str(request.forms.get("Benutzername")) + "', passwort='" + str(request.forms.get("passwort")) + "', VORNAME='" + str(request.forms.get("vorname")) + "', NACHNAME='" + str(request.forms.get("nachname")) + "', GEBURTSDATUM='" + str(request.forms.get("geburtsdatum")) + "', GESCHLECHT='" + str(request.forms.get("geschlecht")) + "', EMAILADRESSE='" + str(request.forms.get("emailadresse")) + "', ORT='" + str(request.forms.get("ort")) + "', LAND='" + str(request.forms.get("land")) + "', FOTO='" + str(request.forms.get("foto")) + "', USER_TYPE='" + str(request.forms.get("user_type")) + "' "
+        print query
+        olympic.execute(query)
+        olympic.commit()
+    else:
+        message = "Falsches password!"
+        return {"userdata" : get_userdata(user),"message" : message, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
 
+    message = "Aenderung erfolgreich!"
+    return {"userdata" : get_userdata(new_username), "message" : message, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}    
+        
 @route('/static/:path#.+#', name='static')
 def static(path):
     return static_file(path, root='static')
@@ -315,10 +354,28 @@ def logout():
 ###############################################
     
 def get_userdata(user):
+    print "Catch data from User: " + user
     olympic = sqlite3.connect('olympic.db')
     query = "SELECT BENUTZERNAME, VORNAME, NACHNAME, GEBURTSDATUM, GESCHLECHT, EMAILADRESSE, ORT, LAND, USER_TYPE, ID FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'"
     cursor = olympic.execute(query).fetchone()
     return Userdata(cursor)
 
+def password_check(user, password):
+    olympic = sqlite3.connect('olympic.db')
+    query = "SELECT PASSWORT FROM BENUTZER WHERE BENUTZERNAME = '" + user + "'"
+    db_password = olympic.execute(query).fetchone()
+    print db_password
+    print password
+    if db_password != None:
+        user_found = True
+        db_password = str(db_password[0])
+    else:
+        db_password = ""
+        return False
+        
+    if db_password == password and user_found:
+        return True
+    else:
+        return False
             
 run(host='localhost', port=8080, debug=True)
