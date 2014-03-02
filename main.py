@@ -164,7 +164,28 @@ def wettkampf(id):
     berichte = get_berichte(id)
     return {"berichte" : berichte, "datatable" : datatable, "wettkampfdata" : wettkampf, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
 
+@route('/bericht/<id>', method='POST')
+@view('olympics_bericht/')
+def commit_commentary(id):
+    user_type = controllAuthification()
+    olympic = sqlite3.connect('olympic.db')
+    user_name = request.get_cookie('user') 
+    author_id = str(olympic.execute("SELECT ID FROM BENUTZER WHERE BENUTZERNAME = '" + user_name + "'").fetchone()[0])
+    commentary = request.forms.get('kommentar')
+    query = "INSERT INTO KOMMENTARE (AUTHOR_ID, KOMMENTAR) VALUES(" + author_id + ", '" + commentary +"')" 
+    c = olympic.execute(query)
+    commentary_id = str(c.lastrowid)
+    query = "INSERT INTO BERICHTE_KOMMENTARE (KOMMENTAR_ID, BERICHT_ID) VALUES(" + commentary_id + ", " + id +")" 
+    print query
+    c = olympic.execute(query)
+    olympic.commit()
     
+    conditions = '''KOMMENTARE AS K JOIN BERICHTE_KOMMENTARE 
+    AS bk JOIN BERICHT AS b where b.id = bk.bericht_id and k.id = bk.kommentar_id and b.id = ''' + id
+    datatable = create_datatable("", conditions , "k.KOMMENTAR")
+    bericht = Bericht(id)
+    return {"bericht" : bericht, "datatable" : datatable,  "wettkampfdata" : wettkampf, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
+
 @route('/bericht/<id>')
 @view('olympics_bericht')
 def bericht(id):
@@ -208,7 +229,7 @@ def sportlerprofil(id):
     datatable = create_datatable("", conditions, "w.name", "w.disziplin", "w.datum", "sw.platzierung", "w.id")
     return {"datatable" : datatable, "athlet" : athlet, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
             
-### database pages ####
+### database pages #### 
 ### Sportler ####
 @route('/commitathlet', method='POST')
 @view('olympics_athlet_added')

@@ -7,8 +7,9 @@
             <br/>
         %include('content_head', head="Kommentare")
         %if user == "Benutzer" or user == "Journalist":
-        <form>
-            <textarea></textarea>
+        <form action="/bericht/{{bericht.id}}" method="post">
+            <textarea name="kommentar"></textarea>
+            <input type="submit"/>
         </form>
         %end
         %include('datatable.tpl', path="")

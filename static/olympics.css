@@ -137,3 +137,9 @@ float: left;
 .colored {
         background-color: #EEE;
 }
+
+.action {
+    font-style: italic;
+    font-size: 0.7em;
+    color: #777;
+}

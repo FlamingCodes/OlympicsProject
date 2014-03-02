@@ -9,6 +9,10 @@
             Benutzerkommentar: {{wettkampfdata.benutzerkommentar}} <br/>
             <br/>
             %include('content_head.tpl', head="Berichte")
+            %if user == "Journalist":
+                <span class="action"><a href="/addreport/{{wettkampfdata.id}}">>>neuen Bericht erstellen</a></span>
+                <br/>
+            %end
             %for b in berichte:
                 <a href="/bericht/{{b.id}}">{{b.ueberschrift}}</a><br/>
             %end
