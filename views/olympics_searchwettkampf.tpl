@@ -37,7 +37,7 @@
                 </table>
                 <input type="submit" value="submit"/> 
             </form>
-            %include('datatable.tpl')
+            %include('datatable.tpl', path="/wettkampf")
 		</div>
 		<div class="breakfloat"></div>
 	</div>

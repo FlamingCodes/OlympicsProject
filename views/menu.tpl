@@ -6,8 +6,9 @@
                 %else:
                     <li class="lh">{{user_name}}</li>
                     <li><a href="/logout">Abmelden</a></li>
-                    <li><a href="benutzerprofil">Benutzerprofil</a></li>
-                    <li><a href="changeprofil">Profil bearbeiten</a></li>
+                    <li><a href="/benutzerprofil">Benutzerprofil</a></li>
+                    <li><a href="/changeprofil">Profil bearbeiten</a></li>
+
                 %end
             </ul>
             <ul>
