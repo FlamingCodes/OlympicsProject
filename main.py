@@ -74,7 +74,7 @@ def select_sport(sport):
     allowed_sports = ["biathlon", "bob", "curling", "eishockey", "eiskunstlauf", "eisschnelllauf", "freestyleski", "nordkomb", "rodeln", "shorttrack", "alpin", "langlauf", "skispringen", "snowboard"]
     datatable = {}
     if sport in allowed_sports:
-        datatable = create_datatable("WETTKAMPF", "WHERE SPORTART='"+ sport.upper() +"'", "ID", "NAME", "DISZIPLIN")
+        datatable = create_datatable("WETTKAMPF", "WHERE SPORTART='"+ sport.upper() +"'", "ID", "NAME", "DATUM", "STARTZEIT", "DISZIPLIN")
         sport = sport[:1].upper() + sport[1:].lower()
         return {"datatable": datatable ,"sport" : sport, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))} 
     else:
@@ -123,7 +123,7 @@ def search_athlet():
     if vorname == None:
         vorname = ""
     if nachname == None:
-        vorname = ""
+        nachname = ""
     if geschlecht == None:
         geschlecht = ""
     if geschlecht == "weiblich":
@@ -152,6 +152,31 @@ def search_wettkampf():
     olympic = sqlite3.connect('olympic.db')
     content = olympic.execute("select * from wettkampf");
     return {"content" : content ,"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user") )}
+
+@route('/searchwettkampf/<sport>', method="post")
+@view('olympics_searchwettkampf')
+def search_wettkampf(sport):
+    user_type = controllAuthification()
+    name = request.forms.get("name")
+    startzeit = str(request.forms.get("startzeit"))
+    datum = str(request.forms.get("datum"))
+    disziplin = request.forms.get("disziplin")
+    id = request.forms.get("id")
+    if name == None:
+        name = ""
+    if startzeit == None:
+        startzeit = ""
+    if datum == None:
+        datum = ""
+    if disziplin == None:
+        disziplin = ""
+    conditions = "WHERE NAME LIKE '%" + name  +"%' " + "AND STARTZEIT LIKE '%" + startzeit +"%' " + "AND DATUM LIKE '%" + datum  +"%' " + "AND DISZIPLIN LIKE '%" + disziplin  +"%' " 
+    if id != None and id != "":
+       conditions += "AND ID = " + id  +" " 
+    print conditions
+    datatable = create_datatable("WETTKAMPF", conditions, "NAME", "STARTZEIT", "DATUM", "DISZIPLIN", "ID")
+    #print "datatable" + str(datatable[1].fetchone())
+    return {"datatable" : datatable , "sport" : sport, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user") )}
 
 @route('/wettkampf/<id>')
 @view('olympics_wettkampf')
@@ -278,15 +303,15 @@ def commit_wettkampf():
     user_type = controllAuthification()
     olympic = sqlite3.connect('olympic.db')
     
-    query = "SELECT ID from WETTKAMPF where Vorname='" + request.forms.get("vorname") + "' AND Nachname='" + request.forms.get("nachname") + "'"
+    query = "SELECT ID from WETTKAMPF where name='" + request.forms.get("name") + "' AND disziplin='" + request.forms.get("disziplin") + "'"
     cursor = olympic.execute(query)
     l = []
     for i in cursor:
         l.append(i[0])
 
-    query = "INSERT INTO WETTKAMPF(NAME, DATUM, STARTZEIT, DISZIPLIN, FOTO, BERICHT, BENUTZERKOMMENTAR) VALUES ('" + request.forms.get("name") + "', '" + request.forms.get("datum") + "', '" + request.forms.get("startzeit") + "', '" + request.forms.get("disziplin") + "', '" + request.forms.get("foto") + "', '" + request.forms.get("bericht") + "', '" + request.forms.get("benutzerkommentar") + "' ?)"
+    query = "INSERT INTO WETTKAMPF(NAME, DATUM, STARTZEIT, DISZIPLIN, FOTO) VALUES ('" + request.forms.get("name") + "', '" + str(request.forms.get("datum")) + "', '" + str(request.forms.get("startzeit")) + "', '" + request.forms.get("disziplin") + "', ?)"
     c = olympic.cursor()
-    file = request.files.bild
+    file = request.files.foto
     raw = file.file.read()
     print file.filename
     bin = [sqlite3.Binary(file.file.read())]
@@ -303,7 +328,7 @@ def commit_wettkampf():
         x = i[0]
         break
     
-    return {"ID" : x, "name": request.forms.get("name"), "datum": request.forms.get("datum"), "startzeit": request.forms.get("startzeit"), "disziplin": request.forms.get("disziplin") , "foto": request.forms.get("foto") , "bericht": request.forms.get("bericht") , "benutzerkommentar": request.forms.get("benutzerkommentar") , "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user") )}
+    return {"ID" : x, "name": request.forms.get("name"), "datum": str(request.forms.get("datum")), "startzeit": str(request.forms.get("startzeit")), "disziplin": request.forms.get("disziplin"), "foto": request.forms.get("foto"), "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user") )}
 
 ### Benutzer registrieren ###
 

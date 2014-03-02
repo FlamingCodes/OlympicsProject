@@ -1,7 +1,7 @@
 %include('header.tpl')
 		<div id="content">
             %include('content_head.tpl', head=sport)
-			<form action="/searchwettkampf" method="post">
+			<form action="/searchwettkampf/{{sport}}" method="post">
                 
                 <table class="search_form">
                     <thead>
@@ -16,23 +16,15 @@
                     </tr>
                     <tr>
                         <td><label for="startzeit"> Startzeit: </label></td>
-                        <td><input id="startzeit" type="text" name="startzeit"/> </td>
+                        <td><input id="startzeit" type="text" name="startzeit" value="15:30" size="5" maxlength="5" minlength="5"/> </td>
                     </tr>
                     <tr>
                         <td><label for="datum"> Datum: </label></td>
-                        <td><input id="datum" type="text" name="datum"/></td>
+                        <td><input id="datum" type="text" name="datum" value="01/01/2014" size="10" maxlength="10" minlength="10"/></td>
                     </tr>
                     <tr>
                         <td><label for="disziplin"> Disziplin: </label></td>
                         <td><input id="disziplin" type="text" name="disziplin"/></td>
-                    </tr>
-                    <tr>
-                        <td><label for="bericht"> Bericht: </label></td>
-                        <td><input id="bericht" type="text" name="bericht"/> </td>
-                    </tr>
-                    <tr>
-                        <td><label for="benutzerkommentar"> Benutzerkommentar: </label></td>
-                        <td><input id="benutzerkommentar" type="text" name="benutzerkommentar"/> </td>
                     </tr>
                 </table>
                 <input type="submit" value="submit"/> 
