@@ -1,12 +1,12 @@
 %include('header.tpl')
 		<div id="content">
         %include('content_head.tpl', head="Wettkampf")
-            Name des Wettkampfs: {{userdata.benutzername}} <br/>
-            Datum: {{userdata.vorname}} <br/>
-            Startzeit: {{userdata.nachname}} <br/>
-            Disziplin: {{userdata.geburtsdatum}} <br/>
-            Bericht: {{userdata.geschlecht}} <br/>
-            Benutzerkommentar: {{userdata.emailadresse}} <br/>
+            Name des Wettkampfs: {{wettkampfdata.name}} <br/>
+            Datum: {{wettkampfdata.datum}} <br/>
+            Startzeit: {{wettkampfdata.startzeit}} <br/>
+            Disziplin: {{wettkampfdata.disziplin}} <br/>
+            Bericht: {{wettkampfdata.bericht}} <br/>
+            Benutzerkommentar: {{wettkampfdata.benutzerkommentar}} <br/>
 		</div>
 		<div class="breakfloat"></div>
 	</div>
