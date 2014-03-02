@@ -236,7 +236,7 @@ def commit_wettkampf():
 ### Benutzer registrieren ###
 
 @route('/commitbenutzer', method='POST')
-@view('olympics_benutzer_added')
+@view('olympics_benutzerprofil')
 def commit_benutzer():
     message = ""
     user_type = controllAuthification()
@@ -244,7 +244,7 @@ def commit_benutzer():
     
     query = "SELECT Benutzername from BENUTZER where Benutzername='" + request.forms.get("benutzername") + "' "
     cursor = olympic.execute(query).fetchone()
-    if len(cursor) > 0:
+    if cursor != None:
         message = "Benutzername existiert bereits"
         return template('olympics_addbenutzer.tpl',{"message" : message, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))})
     else:
@@ -265,15 +265,6 @@ def commit_benutzer():
         olympic.execute(query)
         olympic.commit()
         user = request.forms.get("benutzername")
-        query = "SELECT ID from BENUTZER where Benutzername='" + request.forms.get("benutzername") + "'"
-        for i in l:
-            query += " AND ID IS NOT " + str(i)
-        print query
-        cursor = olympic.execute(query)
-        x = ""
-        for i in cursor:
-            x = i[0]
-            break
         return {"userdata" : get_userdata(user), "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
     
 

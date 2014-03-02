@@ -28,7 +28,7 @@
                     </tr>
                     <tr>
                         <td><label for="geschlecht"> Geschlecht: </label></td>
-                        <td><input type="radio" name="geschlecht" value="weiblich"> weiblich<br>
+                        <td><input type="radio" name="geschlecht" value="weiblich" checked="checked"> weiblich<br>
                             <input type="radio" name="geschlecht" value="maennlich"> maennlich<br> </td>
                     </tr>
                     <tr>
@@ -50,7 +50,7 @@
                     <tr>
                         <td><label for="user_type"> Jounalist: </label></td>
                         <td><input type="radio" name="user_type" value="Journalist"> Ja<br>
-                            <input type="radio" name="user_Type" value="Benutzer"> nein<br> </td>
+                            <input type="radio" name="user_type" value="Benutzer" checked="checked"> nein<br> </td>
                     </tr>
                 </table>
                 <input type="submit" value="submit"/> 
