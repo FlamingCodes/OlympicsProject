@@ -27,5 +27,5 @@
                         <li><a href="menu5">Benutzerkommentar hinzufügen</a></li>
                     %end
 				<li class="lh">Medaillen</li>
-					<li><a href="menu11">Medaillenspiegel</a></li>
+					<li><a href="/medallien_spiegel">Medaillenspiegel</a></li>
 			</ul>

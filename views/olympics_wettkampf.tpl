@@ -16,6 +16,11 @@
             %end
             <br/>
             %include('content_head.tpl', head="Teilnehmer")
+            %if user == "Journalist":
+                <span class="action"><a href="/add_athlet_to_contest/{{wettkampfdata.id}}">>>Teilnehmer hinzufügen</a></span>
+                <span class="action"><a href="/remove_athlet_from_contest/{{wettkampfdata.id}}">>>Teilnehmer entfernen</a></span>
+                <br/>
+            %end
             %include('datatable.tpl', path="/sportlerprofil")
 		</div>
         <div class="breakfloat"></div>
