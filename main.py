@@ -637,5 +637,7 @@ def get_berichte(id):
 def get_nations():
     liste = ["Russland", "Norwegen", "Kanada", "USA", "Niederlande", "Deutschland", "Schweiz", "Weissrussland", "Oesterreich", "Frankreich", "Polen", "China", "Suedkorea", "Schweden", "Tschechien", "Slowenien", "Japan", "Finnland", "VereinigtesKoenigreichGrossbritannien", "Ukraine", "Slowakei", "Italien", "Lettland", "Australien", "Kroatien", "Kasachstan"]
     return liste
+
+
     
 run(host='localhost', port=8080, debug=True)
