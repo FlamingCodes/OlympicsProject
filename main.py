@@ -169,8 +169,11 @@ def wettkampf(id):
 @view('olympics_bericht')
 def bericht(id):
     user_type = controllAuthification()
+    conditions = '''KOMMENTARE AS K JOIN BERICHTE_KOMMENTARE 
+    AS bk JOIN BERICHT AS b where b.id = bk.bericht_id and k.id = bk.kommentar_id and b.id = ''' + id
+    datatable = create_datatable("", conditions , "k.KOMMENTAR")
     bericht = Bericht(id)
-    return {"bericht" : bericht, "wettkampfdata" : wettkampf, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
+    return {"bericht" : bericht, "datatable" : datatable,  "wettkampfdata" : wettkampf, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
     
 @route('/add_benutzer')
 @view('olympics_addbenutzer')
@@ -292,7 +295,7 @@ def commit_benutzer():
     
     query = "SELECT Benutzername from BENUTZER where Benutzername='" + request.forms.get("benutzername") + "' "
     cursor = olympic.execute(query).fetchone()
-    if len(cursor) > 0:
+    if cursor != None:
         message = "Benutzername existiert bereits"
         return template('olympics_addbenutzer.tpl',{"message" : message, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))})
     else:
@@ -302,7 +305,7 @@ def commit_benutzer():
         elif geschlecht == "maennlich":
             woman = "'FALSE'"
             
-        query = "INSERT INTO BENUTZER(BENUTZERNAME, password, VORNAME, NACHNAME, GEBURTSDATUM, GESCHLECHT, EMAILADRESSE, ORT, LAND, USER_TYPE) VALUES ('" + str(request.forms.get("benutzername")) + "', '" + str(request.forms.get("password")) + "', '" + str(request.forms.get("vorname")) + "', '" + str(request.forms.get("nachname")) + "', '" + str(request.forms.get("geburtsdatum")) + "', " + woman + ", '" + str(request.forms.get("emailadresse")) + "', '" + str(request.forms.get("ort")) + "', '" + str(request.forms.get("land")) + "', '" + str(request.forms.get("user_type")) + "')"
+        query = "INSERT INTO BENUTZER(BENUTZERNAME, PASSWORT, VORNAME, NACHNAME, GEBURTSDATUM, GESCHLECHT, EMAILADRESSE, ORT, LAND, USER_TYPE) VALUES ('" + str(request.forms.get("benutzername")) + "', '" + str(request.forms.get("passwort")) + "', '" + str(request.forms.get("vorname")) + "', '" + str(request.forms.get("nachname")) + "', '" + str(request.forms.get("geburtsdatum")) + "', " + woman + ", '" + str(request.forms.get("emailadresse")) + "', '" + str(request.forms.get("ort")) + "', '" + str(request.forms.get("land")) + "', '" + str(request.forms.get("user_type")) + "')"
         #c = olympic.cursor()
         #file = request.files.bild
         #raw = file.file.read()
@@ -314,14 +317,6 @@ def commit_benutzer():
         olympic.commit()
         user = request.forms.get("benutzername")
         query = "SELECT ID from BENUTZER where Benutzername='" + request.forms.get("benutzername") + "'"
-        for i in l:
-            query += " AND ID IS NOT " + str(i)
-        print query
-        cursor = olympic.execute(query)
-        x = ""
-        for i in cursor:
-            x = i[0]
-            break
         return {"userdata" : get_userdata(user), "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
 
         

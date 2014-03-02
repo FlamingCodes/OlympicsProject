@@ -7,12 +7,13 @@ class Bericht():
         query = "SELECT ID, UEBERSCHRIFT, BERICHT, AUTHOR_ID FROM BERICHT where ID = " + id
         print query
         cursor = olympic.execute(query).fetchone()
-        print cursor
+        #print cursor
         self.id = str(cursor[0])
         self.ueberschrift = str(cursor[1])
         self.bericht = str(cursor[2])
         self.author_id = str(cursor[3])
         cursor = olympic.execute("SELECT VORNAME, NACHNAME FROM BENUTZER WHERE ID = " + self.author_id).fetchone()
+        print cursor
         self.author = cursor[0] + " " + cursor[1]
         
     def id(self):

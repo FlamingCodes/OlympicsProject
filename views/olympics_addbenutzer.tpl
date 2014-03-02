@@ -50,7 +50,7 @@
                     <tr>
                         <td><label for="user_type"> Jounalist: </label></td>
                         <td><input type="radio" name="user_type" value="Journalist"> Ja<br>
-                            <input type="radio" name="user_Type" value="Benutzer"> nein<br> </td>
+                            <input type="radio" name="user_type" value="Benutzer"> nein<br> </td>
                     </tr>
                 </table>
                 <input type="submit" value="submit"/> 
