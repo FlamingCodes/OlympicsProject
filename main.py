@@ -130,14 +130,14 @@ def create_datatable(table, conditions, *spalten):
 @view('olympics_addathlet')
 def add_athlet():
     user_type = controllAuthification()
-    return {"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
+    return {"nations" : get_nations(), "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
     
 @route('/search_athlet')
 @view('olympics_searchathlet')
 def search_athlet():
     user_type = controllAuthification()
     datatable = create_datatable("SPORTLER", "", "VORNAME", "NACHNAME", "GESCHLECHT", "NATIONALITAET", "ID")
-    return {"datatable" : datatable ,"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user") )}
+    return {"nations" : get_nations(), "datatable" : datatable ,"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user") )}
 
 
 @route('/search_athlet', method="post")
@@ -166,7 +166,7 @@ def search_athlet():
        conditions += "AND ID = " + id  +" " 
     print conditions
     datatable = create_datatable("SPORTLER", conditions, "VORNAME", "NACHNAME", "GESCHLECHT", "NATIONALITAET", "ID")
-    return {"datatable" : datatable ,"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user") )}
+    return {"nations" : get_nations(), "datatable" : datatable ,"get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user") )}
     
 @route('/add_wettkampf')
 @view('olympics_addwettkampf')
@@ -306,7 +306,7 @@ def commit_athlet():
         woman = "'TRUE'"
     elif geschlecht == "maennlich":
         woman = "'FALSE'"
-    query = "INSERT INTO SPORTLER (VORNAME, NACHNAME, GESCHLECHT, NATIONALITAET, FOTO) VALUES ('" + request.forms.get("vorname") + "', '" + request.forms.get("nachname") + "', " + woman + ", '" + request.forms.get("nationalitaet") + "', ?)"
+    query = "INSERT INTO SPORTLER (VORNAME, NACHNAME, GESCHLECHT, NATIONALITAET, FOTO) VALUES ('" + request.forms.get("vorname") + "', '" + request.forms.get("nachname") + "', " + woman + ", '" + request.forms.get("nations") + "', ?)"
     c = olympic.cursor()
     file = request.files.bild
     raw = file.file.read()
@@ -516,5 +516,10 @@ def get_berichte(id):
     for b in berichte:
         print b.ueberschrift
     return berichte
-            
+    
+def get_nations():
+    liste = ["Russland", "Norwegen", "Kanada", "USA", "Niederlande", "Deutschland", "Schweiz", "Weissrussland", "Oesterreich", "Frankreich", "Polen", "China", "Suedkorea", "Schweden", "Tschechien", "Slowenien", "Japan", "Finnland", "VereinigtesKoenigreichGrossbritannien", "Ukraine", "Slowakei", "Italien", "Lettland", "Australien", "Kroatien", "Kasachstan"]
+    return liste
+
+    
 run(host='localhost', port=8080, debug=True)
