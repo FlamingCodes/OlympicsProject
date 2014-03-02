@@ -163,6 +163,14 @@ def wettkampf(id):
     datatable = create_datatable("",conditions , "s.vorname", "s.nachname", "sw.platzierung", "s.id as ID" )
     berichte = get_berichte(id)
     return {"berichte" : berichte, "datatable" : datatable, "wettkampfdata" : wettkampf, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
+
+    
+@route('/bericht/<id>')
+@view('olympics_bericht')
+def bericht(id):
+    user_type = controllAuthification()
+    bericht = Bericht(id)
+    return {"bericht" : bericht, "wettkampfdata" : wettkampf, "get_url" : bottle.url, "user" : user_type, "user_name" : str(request.get_cookie("user"))}
     
 @route('/add_benutzer')
 @view('olympics_addbenutzer')
